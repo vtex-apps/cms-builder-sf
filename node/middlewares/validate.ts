@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { UserInputError } from '@vtex/api'
 
 export async function validate(ctx: Context, next: () => Promise<any>) {

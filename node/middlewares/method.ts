@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
 import { json } from 'co-body'
 
 export async function method(ctx: Context, next: () => Promise<any>) {
-  if (ctx.method.toUpperCase() !== 'GET') {
+  if (ctx.method.toUpperCase() !== 'GET' || ctx.method.toUpperCase() !== 'PUT' || ctx.method.toUpperCase() !== 'POST') {
     // Or handle the request differently if you need it, maybe using a switch-case statement on ctx.method
     const body = await json(ctx.req)
     console.log('Received body:', body)
