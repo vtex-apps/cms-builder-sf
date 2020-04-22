@@ -4,11 +4,11 @@ import { mkdirs, remove, writeJSON } from 'fs-extra'
 export async function createBaseFolder(path: string, account: string, workspace: string){
   await remove(path)
   await mkdirs(path)
-  path = path + '/' + account
+  path = `${path}/${account}`
   await mkdirs(path)
-  path = path + '/' + workspace
+  path = `${path}/${workspace}`
   await mkdirs(path)
-  const newPath = path + '/store'
+  const newPath = `${path  }/store`
   await mkdirs(newPath)
 
   return path
@@ -23,9 +23,9 @@ export async function parseJSON(body: any, path: string, mainPath: string) {
       files = files.concat(folderFiles)
     }
     else {
-      const filePath = path + '/' + body[i].name + '.' + body[i].type
+      const filePath = `${path}/${body[i].name}.${body[i].type}`
       await writeJSON(filePath, body[i].content)
-      const file: File = { path: filePath.replace(mainPath + '/', '') , content: JSON.stringify(body[i].content)}
+      const file: File = { path: filePath.replace(`${mainPath}/`, '') , content: JSON.stringify(body[i].content)}
       files.push(file)
     }
   }
@@ -33,7 +33,7 @@ export async function parseJSON(body: any, path: string, mainPath: string) {
 }
 
 async function makeFolder(path: string, name: string) {
-  const newPath = path + '/' + name
+  const newPath = `${path}/${name}`
   await mkdirs(newPath)
   return newPath
 }
