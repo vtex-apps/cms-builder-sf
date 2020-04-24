@@ -1,25 +1,22 @@
 import { File } from '@vtex/api/lib/clients/infra/Registry'
-import { mkdirs, remove, writeJSON } from 'fs-extra'
+import { ensureDir, pathExists, remove, writeJSON } from 'fs-extra'
 
 export async function createBaseFolder(path: string, account: string, workspace: string){
-  await remove(path)
-  await mkdirs(path)
-  path = `${path}/${account}`
-  await mkdirs(path)
-  path = `${path}/${workspace}`
-  await mkdirs(path)
-  const newPath = `${path  }/store`
-  await mkdirs(newPath)
+  if( pathExists(path) ){
+    await remove(path)
+  }
+  const newPath = `${path}/${account}/${workspace}`
+  await ensureDir(`${newPath}/store`)
 
-  return path
+  return newPath
 }
 
-export async function parseJSON(body: any, path: string, mainPath: string) {
+export async function extractFiles(body: any, path: string, mainPath: string) {
   let files = [] as File[]
   for (const i in body) {
     if(body[i].type === 'folder') {
       const newPath = await makeFolder(path, body[i].name)
-      const folderFiles = await parseJSON(body[i].content, newPath, mainPath)
+      const folderFiles = await extractFiles(body[i].content, newPath, mainPath)
       files = files.concat(folderFiles)
     }
     else {
@@ -34,6 +31,6 @@ export async function parseJSON(body: any, path: string, mainPath: string) {
 
 async function makeFolder(path: string, name: string) {
   const newPath = `${path}/${name}`
-  await mkdirs(newPath)
+  await ensureDir(newPath)
   return newPath
 }
