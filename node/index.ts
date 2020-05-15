@@ -11,7 +11,8 @@ import {
 
 import { Clients } from './clients'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
-import { publishStore } from './middlewares/publishStore'
+// import { publishStore } from './middlewares/publishStore'
+import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 
 const TIMEOUT_MS = 800
 
@@ -54,7 +55,7 @@ export default new Service<Clients, State, ParamsContext>({
     // `status` is the route ID from service.json. It maps to an array of middlewares (or a single handler).
     status: method({
       DEFAULT: methodNotAllowed,
-      POST: [publishStore],
+      POST: [publishStoreFromPage],
     }),
   },
 })

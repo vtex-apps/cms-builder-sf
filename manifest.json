@@ -33,6 +33,12 @@
     },
     {
       "name": "vtex.builder-hub:publish"
+    },
+    {
+      "name": "vtex.apps"
+    },
+    {
+      "name": "vtex.registry"
     }
   ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
