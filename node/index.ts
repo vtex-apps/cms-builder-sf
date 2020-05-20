@@ -2,6 +2,7 @@ import {
   Cached,
   ClientsConfig,
   LRUCache,
+  method,
   ParamsContext,
   RecorderState,
   Service,
@@ -9,9 +10,8 @@ import {
 } from '@vtex/api'
 
 import { Clients } from './clients'
-import { method } from './middlewares/method'
-import { status } from './middlewares/status'
-import { validate } from './middlewares/validate'
+import { methodNotAllowed } from './middlewares/methodNotAllowed'
+import { publishStore } from './middlewares/publishStore'
 
 const TIMEOUT_MS = 800
 
@@ -52,6 +52,9 @@ export default new Service<Clients, State, ParamsContext>({
   clients,
   routes: {
     // `status` is the route ID from service.json. It maps to an array of middlewares (or a single handler).
-    status: [method, validate, status],
+    status: method({
+      DEFAULT: methodNotAllowed,
+      POST: [publishStore],
+    }),
   },
 })
