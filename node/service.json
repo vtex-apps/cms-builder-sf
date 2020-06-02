@@ -6,8 +6,8 @@
   "maxReplicas": 4,
   "routes": {
     "status": {
-      "path": "/_v/status/:code",
-      "public": true
+      "path": "/publishPage",
+      "public": false
     }
   }
 }
