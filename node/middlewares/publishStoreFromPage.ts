@@ -14,13 +14,29 @@ export async function publishStoreFromPage(
   const { logger } = ctx.vtex
   const body = await json(ctx.req)
 
-  const uploadFile: UploadFile = {name: `${body.meta.title}.json`, file: JSON.stringify(body.blocks), path: ''}
+  const uploadFile: UploadFile = {
+    name: `${body.meta.title}.json`,
+    file: JSON.stringify(body.blocks),
+    path: '',
+  }
 
-  const path = await createBaseFolderWithStore(storeState, ctx.vtex.account, ctx.vtex.workspace)
-  const manifest = await makeManifest(path, storeState, ctx.vtex.account, version)
-  const page: File = { path: `store/blocks/${uploadFile.name}`, content: uploadFile.file }
+  const path = await createBaseFolderWithStore(
+    storeState,
+    ctx.vtex.account,
+    ctx.vtex.workspace
+  )
+  const manifest = await makeManifest(
+    path,
+    storeState,
+    ctx.vtex.account,
+    version
+  )
+  const page: File = {
+    path: `store/blocks/${uploadFile.name}`,
+    content: uploadFile.file,
+  }
   const routesContent = makeRoutes(body.meta.page, body.meta.slug)
-  const routes: File = {path: `store/routes.json`, content: routesContent}
+  const routes: File = { path: `store/routes.json`, content: routesContent }
   const files = [manifest, page, routes]
 
   const appName = `${ctx.vtex.account}.${storeState}@${version}`
@@ -31,8 +47,7 @@ export async function publishStoreFromPage(
     `Finished building ${appName}. Please check to make sure the publishing was successful.`
   )
 
-  ctx.status = 200
-  ctx.body = 'Deu certo :D'
+  ctx.status = 204
 
   await next()
 }

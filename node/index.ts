@@ -11,7 +11,6 @@ import {
 
 import { Clients } from './clients'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
-// import { publishStore } from './middlewares/publishStore'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 
 const TIMEOUT_MS = 8000

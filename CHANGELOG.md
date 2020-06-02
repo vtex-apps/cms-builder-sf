@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- Added middleware for publishing one page in the store-state app
+- Middleware for publishing one page in the store-state app
 
 ## [0.2.0] - 2020-06-02
 ### Changed
