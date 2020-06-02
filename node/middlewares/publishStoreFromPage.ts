@@ -1,14 +1,11 @@
-import {
-  extractVersionFromAppId,
-  removeVersionFromAppId,
-} from '@vtex/api'
+import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { json } from 'co-body'
-import { ensureDir } from 'fs-extra'
 
-import { uploadAndExtractFiles, UploadFile } from '../util/uploadFile'
-import { version } from './publishStore'
+import { createBaseFolderWithStore } from '../util/extractFiles'
+import { makeRoutes, UploadFile } from '../util/uploadFile'
+import { makeManifest, version } from './publishStore'
 
-const storeState = 'store-state'
+const storeState = 'store-state-test'
 
 export async function publishStoreFromPage(
   ctx: Context,
@@ -17,28 +14,22 @@ export async function publishStoreFromPage(
   const { logger } = ctx.vtex
   const body = await json(ctx.req)
 
-  const uploadFile: UploadFile = {name: `${body.title}.json`, file: body.blocks, path: ''}
+  const uploadFile: UploadFile = {name: `${body.meta.title}.json`, file: JSON.stringify(body.blocks), path: ''}
 
-  const appName = `${ctx.vtex.account}.${storeState}@0.0.2`
-  const filePath = 'test'
-  await ensureDir(filePath)
+  const path = await createBaseFolderWithStore(storeState, ctx.vtex.account, ctx.vtex.workspace)
+  const manifest = await makeManifest(path, storeState, ctx.vtex.account, version)
+  const page: File = { path: `store/blocks/${uploadFile.name}`, content: uploadFile.file }
+  const routesContent = makeRoutes(body.meta.page, body.meta.slug)
+  const routes: File = {path: `store/routes.json`, content: routesContent}
+  const files = [manifest, page, routes]
 
-  const appVersion = extractVersionFromAppId(appName)
-  const app = removeVersionFromAppId(appName)
-  await ctx.clients.registry.unpackAppBundle(
-    app,
-    appVersion,
-    '',
-    filePath,
-    false
+  const appName = `${ctx.vtex.account}.${storeState}@${version}`
+
+  const publishedApp = await ctx.clients.builder.publishApp(appName, files)
+  logger.info(`Build result message: ${publishedApp.message}`)
+  logger.info(
+    `Finished building ${appName}. Please check to make sure the publishing was successful.`
   )
-
-  const sourceCodePath = `${filePath}/src`
-  const files = await uploadAndExtractFiles(uploadFile, sourceCodePath, sourceCodePath)
-  const newAppName = `${ctx.vtex.account}.${storeState}@${version}`
-
-  const publishedApp = await ctx.clients.builder.publishApp(newAppName, files)
-  logger.info(publishedApp)
 
   ctx.status = 200
   ctx.body = 'Deu certo :D'

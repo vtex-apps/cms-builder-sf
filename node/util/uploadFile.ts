@@ -2,12 +2,17 @@ import { Logger } from '@vtex/api'
 import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { lstatSync, readdir, readJSON } from 'fs-extra'
 
-import { version } from "../middlewares/publishStore"
+import { version } from '../middlewares/publishStore'
 
 export interface UploadFile {
   name: string
   file: string
   path: string | ''
+}
+
+export function makeRoutes(key: string, path: string){
+  const routesFile = `{"${key}": {"path": "${path}"}}`
+  return routesFile
 }
 
 export async function findFile(uploadFile: UploadFile, path: string, logger: Logger) {
