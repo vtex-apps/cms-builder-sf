@@ -1,7 +1,7 @@
 {
   "name": "store-builder",
   "vendor": "vtex",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "title": "Service Example",
   "description": "Reference app for VTEX IO Services",
   "mustUpdateAt": "2018-01-04",
