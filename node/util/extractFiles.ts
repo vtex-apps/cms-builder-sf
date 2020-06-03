@@ -1,12 +1,19 @@
 import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { ensureDir, pathExists, remove, writeJSON } from 'fs-extra'
 
+export async function createBaseFolderWithStore(path: string, account: string, workspace: string){
+  const newPath = createBaseFolder(path, account, workspace)
+  await ensureDir(`${newPath}/store`)
+
+  return newPath
+}
+
 export async function createBaseFolder(path: string, account: string, workspace: string){
   if( pathExists(path) ){
     await remove(path)
   }
   const newPath = `${path}/${account}/${workspace}`
-  await ensureDir(`${newPath}/store`)
+  await ensureDir(newPath)
 
   return newPath
 }
