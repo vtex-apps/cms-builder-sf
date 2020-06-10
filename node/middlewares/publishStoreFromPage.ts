@@ -6,7 +6,7 @@ import { makeRoutes, UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 import { makeManifest } from './publishStore'
 
-const storeState = 'store-state-teste'
+const storeState = 'store-state'
 
 export async function publishStoreFromPage(
   ctx: Context,
@@ -16,8 +16,8 @@ export async function publishStoreFromPage(
   const body = await json(ctx.req)
 
   const uploadFile: UploadFile = {
-    name: `${body.meta.title}.json`,
     file: JSON.stringify(body.blocks),
+    name: `${body.meta.title}.json`,
     path: '',
   }
 
@@ -31,9 +31,7 @@ export async function publishStoreFromPage(
     const index = versions.data.length - 1
     appID = versions.data[index].versionIdentifier
   }
-  console.log('VERSION', appID)
   const newAppID = bumpPatchVersion(appID)
-  console.log('NEW VERSION', newAppID)
   const version = newAppID.split('@')[1]
 
   const path = await createBaseFolderWithStore(
@@ -48,19 +46,19 @@ export async function publishStoreFromPage(
     version
   )
   const page: File = {
-    path: `store/blocks/${uploadFile.name}`,
     content: uploadFile.file,
+    path: `store/blocks/${uploadFile.name}`,
   }
   const routesContent = makeRoutes(body.meta.page, body.meta.slug)
   const routes: File = { path: `store/routes.json`, content: routesContent }
   const files = [manifest, page, routes]
 
 
-  // const publishedApp = await ctx.clients.builder.publishApp(appName, files)
-  // logger.info(`Build result message: ${publishedApp.message}`)
-  // logger.info(
-  //   `Finished building ${appName}. Please check to make sure the publishing was successful.`
-  // )
+  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  logger.info(`Build result message: ${publishedApp.message}`)
+  logger.info(
+    `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
+  )
 
   ctx.status = 204
 
