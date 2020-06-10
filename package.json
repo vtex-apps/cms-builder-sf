@@ -33,9 +33,11 @@
   "dependencies": {
     "@types/bluebird": "^3.5.30",
     "@types/fs-extra": "^8.1.0",
+    "@types/semver": "^7.2.0",
     "archiver": "^4.0.1",
     "bluebird": "^3.7.2",
     "fs-extra": "^9.0.0",
+    "semver": "^7.3.2",
     "stream": "^0.0.2",
     "util": "^0.12.2"
   }
