@@ -1,6 +1,7 @@
 import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { json } from 'co-body'
 
+import { parseAppId } from '@vtex/api'
 import { createBaseFolderWithStore } from '../util/extractFiles'
 import { makeRoutes, UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
@@ -21,18 +22,18 @@ export async function publishStoreFromPage(
     path: '',
   }
 
-  const versions = await ctx.clients.registry.listVersionsByApp(`${ctx.vtex.account}.${storeState}`).catch(() => {
-    logger.warn(`Could not find previous versions of ${storeState}`)
-  })
-
   const appName = `${ctx.vtex.account}.${storeState}`
   let appID = `${appName}@0.0.0`
-  if( versions ) {
+  try {
+    const versions = await ctx.clients.registry.listVersionsByApp(`${ctx.vtex.account}.${storeState}`)
     const index = versions.data.length - 1
     appID = versions.data[index].versionIdentifier
+  } catch(err) {
+    logger.warn(`Could not find previous versions of ${storeState}`)
   }
+
   const newAppID = bumpPatchVersion(appID)
-  const version = newAppID.split('@')[1]
+  const { version } = parseAppId(newAppID)
 
   const path = await createBaseFolderWithStore(
     storeState,
@@ -60,7 +61,8 @@ export async function publishStoreFromPage(
     `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
   )
 
-  ctx.status = 204
+  ctx.status = 200
+  ctx.body = `${newAppID}`
 
   await next()
 }
