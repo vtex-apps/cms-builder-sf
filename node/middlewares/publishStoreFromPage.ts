@@ -9,6 +9,11 @@ import { makeManifest } from './publishStore'
 
 const storeState = 'store-state'
 
+const jsonResponse = (newAppID: string) => {
+  const response = `{"appID": "${newAppID}"}`
+  return response
+}
+
 export async function publishStoreFromPage(
   ctx: Context,
   next: () => Promise<any>
@@ -61,8 +66,10 @@ export async function publishStoreFromPage(
     `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
   )
 
+  const response = jsonResponse(newAppID)
+
   ctx.status = 200
-  ctx.body = `${newAppID}`
+  ctx.body = response
 
   await next()
 }
