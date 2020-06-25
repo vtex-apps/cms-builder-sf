@@ -9,10 +9,7 @@ import { makeManifest } from './publishStore'
 
 const storeState = 'store-state'
 
-const jsonResponse = (newAppID: string) => {
-  const response = `{"appID": "${newAppID}"}`
-  return response
-}
+const jsonResponse = (newAppID: string) => `{"appID": "${newAppID}"}`
 
 export async function publishStoreFromPage(
   ctx: Context,
