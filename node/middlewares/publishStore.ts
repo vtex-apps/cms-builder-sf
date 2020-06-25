@@ -4,7 +4,7 @@ import { writeJSON } from 'fs-extra'
 
 import { createBaseFolderWithStore, extractFiles } from '../util/extractFiles'
 
-export const version = '0.0.11'
+export const version = '0.0.12'
 
 // eslint-disable-next-line max-params
 export async function makeManifest(path: string, name: string, account: string, appVersion: string) {

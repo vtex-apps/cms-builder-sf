@@ -36,6 +36,9 @@
     },
     {
       "name": "read-public-registry-assets"
+    },
+    {
+      "name": "read-workspace-apps-assets"
     }
   ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
