@@ -41,7 +41,7 @@ export async function installApp(
     return
   }
 
-  const installResponse = ctx.clients.billing2.installApp(appID, true, false)
+  const installResponse = ctx.clients.billings.installApp(appID, true, false)
   console.log(installResponse)
 
   ctx.status = 200

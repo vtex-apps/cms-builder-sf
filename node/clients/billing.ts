@@ -6,7 +6,7 @@ interface InstallResponse {
   billingOptions?: string
 }
 
-export default class Billing2 extends AppClient {
+export default class Billing extends AppClient {
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.billing@0.x', ioContext, opts)
   }
