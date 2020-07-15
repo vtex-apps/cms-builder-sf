@@ -55,7 +55,7 @@ export default new Service<Clients, State, ParamsContext>({
     // `status` is the route ID from service.json. It maps to an array of middlewares (or a single handler).
     install: method({
       DEFAULT: methodNotAllowed,
-      GET: [installApp],
+      PUT: [installApp],
     }),
     status: method({
       DEFAULT: methodNotAllowed,
