@@ -1,7 +1,7 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 import { GraphQlError } from '../util/errors'
 
-interface InstallResponse {
+export interface InstallResponse {
   code: string
   billingOptions?: string
 }

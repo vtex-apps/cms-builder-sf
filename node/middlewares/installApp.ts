@@ -1,4 +1,5 @@
-import { parseAppId, RegistryAppVersionsList } from '@vtex/api'
+import { parseAppId } from '@vtex/api'
+import { InstallResponse } from '../clients/billing'
 
 async function didNotFindAppResponse(ctx: Context, next: () => Promise<any>){
   ctx.status = 200
@@ -20,28 +21,15 @@ export async function installApp(
   const appID = params.code as string
   const { name } = parseAppId(appID)
 
-  let versions: RegistryAppVersionsList = {data:[]}
+  let installResponse: InstallResponse = {code:''}
   try {
-    versions = await ctx.clients.registry.listVersionsByApp(name)
+    installResponse = await ctx.clients.billings.installApp(appID, true, false)
   } catch(err) {
-    logger.warn(`Could not find previous versions of ${name}`)
+    logger.warn(`Could not install ${name}`)
     await didNotFindAppResponse(ctx, next)
     return
   }
 
-  let foundApp = false
-  versions.data.forEach(element => {
-    if(element.versionIdentifier === appID) {
-      foundApp = true
-    }
-  })
-
-  if(foundApp === false){
-    await didNotFindAppResponse(ctx, next)
-    return
-  }
-
-  const installResponse = ctx.clients.billings.installApp(appID, true, false)
   console.log(installResponse)
 
   ctx.status = 200
