@@ -7,7 +7,7 @@ async function didNotFindAppResponse(ctx: Context, next: () => Promise<any>){
   await next()
 }
 
-export async function installApp(
+export async function checkPublishedApp(
   ctx: Context,
   next: () => Promise<any>
 ) {
