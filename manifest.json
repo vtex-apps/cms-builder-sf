@@ -7,7 +7,8 @@
   "mustUpdateAt": "2018-01-04",
   "categories": [],
   "dependencies": {
-    "vtex.builder-hub": "0.x"
+    "vtex.builder-hub": "0.x",
+    "vtex.billing": "0.x"
   },
   "builders": {
     "node": "6.x",
@@ -33,6 +34,9 @@
     },
     {
       "name": "vtex.builder-hub:publish"
+    },
+    {
+      "name": "install-apps"
     },
     {
       "name": "read-public-registry-assets"

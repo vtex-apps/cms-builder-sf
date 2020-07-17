@@ -8,6 +8,10 @@
     "status": {
       "path": "/publishPage",
       "public": false
+    },
+    "install": {
+      "path": "/checkPublishedApp",
+      "public": false
     }
   }
 }

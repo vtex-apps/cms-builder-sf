@@ -10,6 +10,7 @@ import {
 } from '@vtex/api'
 
 import { Clients } from './clients'
+import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 
@@ -52,6 +53,10 @@ export default new Service<Clients, State, ParamsContext>({
   clients,
   routes: {
     // `status` is the route ID from service.json. It maps to an array of middlewares (or a single handler).
+    install: method({
+      DEFAULT: methodNotAllowed,
+      PUT: [checkPublishedApp],
+    }),
     status: method({
       DEFAULT: methodNotAllowed,
       POST: [publishStoreFromPage],
