@@ -1,4 +1,5 @@
 import { parseAppId } from '@vtex/api'
+import { json } from 'co-body'
 import { InstallResponse } from '../clients/billing'
 
 async function didNotFindAppResponse(ctx: Context, next: () => Promise<any>){
@@ -13,12 +14,9 @@ export async function checkPublishedApp(
 ) {
 
   const { logger } = ctx.vtex
-  const {
-    vtex: {
-      route: { params },
-    },
-  } = ctx
-  const appID = params.code as string
+  const body = await json(ctx.req)
+
+  const appID = body.buildId
   const { name } = parseAppId(appID)
 
   let installResponse: InstallResponse = {code:''}

@@ -10,7 +10,7 @@
       "public": false
     },
     "install": {
-      "path": "/checkPublishedApp/:code",
+      "path": "/checkPublishedApp",
       "public": false
     }
   }
