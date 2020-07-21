@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Manifest implementation and lint fix
 
 ## [0.6.1] - 2020-07-17
+### Changed
+- Inputs and outputs of routes
 
 ## [0.6.0] - 2020-07-17
 ## Added
