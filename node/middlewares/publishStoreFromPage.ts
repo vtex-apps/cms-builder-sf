@@ -1,13 +1,12 @@
 import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { json } from 'co-body'
+import { STORE_STATE } from './../util/constants'
 
 import { parseAppId } from '@vtex/api'
 import { createBaseFolderWithStore } from '../util/extractFiles'
 import { makeDefaultManifest } from '../util/manifest'
 import { makeRoutes, UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
-
-const storeState = 'store-state'
 
 const jsonResponse = (newAppID: string) => `{"appID": "${newAppID}"}`
 
@@ -24,26 +23,26 @@ export async function publishStoreFromPage(
     path: '',
   }
 
-  const appName = `${ctx.vtex.account}.${storeState}`
+  const appName = `${ctx.vtex.account}.${STORE_STATE}`
   let appID = `${appName}@0.0.0`
   try {
-    const versions = await ctx.clients.registry.listVersionsByApp(`${ctx.vtex.account}.${storeState}`)
+    const versions = await ctx.clients.registry.listVersionsByApp(`${ctx.vtex.account}.${STORE_STATE}`)
     const index = versions.data.length - 1
     appID = versions.data[index].versionIdentifier
   } catch(err) {
-    logger.warn(`Could not find previous versions of ${storeState}`)
+    logger.warn(`Could not find previous versions of ${STORE_STATE}`)
   }
 
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
   await createBaseFolderWithStore(
-    storeState,
+    STORE_STATE,
     ctx.vtex.account,
     ctx.vtex.workspace
   )
   const manifest = await makeDefaultManifest(
-    storeState,
+    STORE_STATE,
     version,
     ctx.vtex.account
   )
