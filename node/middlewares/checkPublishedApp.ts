@@ -3,8 +3,8 @@ import { json } from 'co-body'
 import { InstallResponse } from '../clients/billing'
 
 async function didNotFindAppResponse(installResponse: InstallResponse, ctx: Context, next: () => Promise<any>){
-  ctx.status = 200
-  ctx.body = `{"status": "${JSON.stringify(installResponse.code)}"}`
+  ctx.status = 404
+  ctx.body = `{"message": ${JSON.stringify(installResponse.code)}, "code": "FAIL"}`
   await next()
 }
 
@@ -28,8 +28,10 @@ export async function checkPublishedApp(
     return
   }
 
-  ctx.status = 200
-  ctx.body = `{"status": "success"}`
+  console.log(installResponse)
+
+  ctx.status = 201
+  ctx.body = `{"message": "success", "code": "SUCCESS"}`
 
   await next()
 }
