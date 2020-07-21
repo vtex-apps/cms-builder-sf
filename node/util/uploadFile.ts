@@ -10,11 +10,6 @@ export interface UploadFile {
   path: string | ''
 }
 
-export function makeRoutes(key: string, path: string){
-  const routesFile = `{"${key}": {"path": "${path}"}}`
-  return routesFile
-}
-
 export async function findFile(uploadFile: UploadFile, path: string, logger: Logger) {
   let filePath = ''
   const content = await readdir(path)
