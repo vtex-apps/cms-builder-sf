@@ -5,7 +5,7 @@ import { STORE_STATE } from './../util/constants'
 import { parseAppId } from '@vtex/api'
 import { createBaseFolderWithStore } from '../util/extractFiles'
 import { makeDefaultManifest } from '../util/manifest'
-import { makeRoutes, getRouteJSON } from '../util/routes'
+import { getRouteJSON, makeRoutes } from '../util/routes'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
