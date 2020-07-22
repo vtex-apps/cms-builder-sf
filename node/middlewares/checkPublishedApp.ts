@@ -23,7 +23,7 @@ export async function checkPublishedApp(
     await ctx.clients.registry.getAppManifest(name, version)
   } catch(err) {
     logger.warn(`Could not find ${name}`)
-    await didNotFindAppResponse('Error in build - could not find app', 'BUID_FAIL', ctx, next)
+    await didNotFindAppResponse('Error in build - could not find app', 'BUILD_FAILED', ctx, next)
     return
   }
 
