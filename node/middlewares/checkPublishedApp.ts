@@ -28,8 +28,6 @@ export async function checkPublishedApp(
     return
   }
 
-  console.log(installResponse)
-
   ctx.status = 200
   ctx.body = `{"status": "success"}`
 
