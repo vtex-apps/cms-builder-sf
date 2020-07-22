@@ -56,9 +56,6 @@ export async function publishStoreFromPage(
   const routesFile: File = { path: `store/routes.json`, content: getRouteJSON(routes) }
   const files = [manifestFile, page, routesFile]
 
-  console.log(getRouteJSON(routes))
-
-
   const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(
