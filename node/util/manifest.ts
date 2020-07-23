@@ -20,6 +20,7 @@ export function getAppId (manifest: Manifest): string {
 export function defaultDependencies () {
   const dependencies: {[key: string]: string} = {'vtex.store': '2.x',
   'vtex.store-header': '2.x',
+  // tslint:disable-next-line:object-literal-sort-keys
   'vtex.product-summary': '2.x',
   'vtex.store-footer': '2.x',
   'vtex.store-components': '3.x',
