@@ -5,9 +5,10 @@ import { lstatSync, readdir, readJSON } from 'fs-extra'
 import { version } from '../middlewares/publishStore'
 
 export interface UploadFile {
-  name: string
+  title: string
   file: string
-  path: string | ''
+  slug: string
+  page: string
 }
 
 export async function findFile(uploadFile: UploadFile, path: string, logger: Logger) {
