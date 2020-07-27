@@ -2,7 +2,7 @@ import { File } from '@vtex/api/lib/clients/infra/Registry'
 
 import { STORE_STATE } from './constants'
 import { makeDefaultManifest, Manifest } from './manifest'
-import { makeRoutes, Routes, getRouteJSON } from './routes'
+import { getRouteJSON, makeRoutes, Routes } from './routes'
 import { UploadFile } from './uploadFile'
 
 export interface AppFiles {
