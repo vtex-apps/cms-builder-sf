@@ -1,4 +1,3 @@
-import { Logger } from '@vtex/api'
 import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { lstatSync, readdir, readJSON } from 'fs-extra'
 
@@ -9,25 +8,6 @@ export interface UploadFile {
   file: string
   slug: string
   page: string
-}
-
-export async function findFile(uploadFile: UploadFile, path: string, logger: Logger) {
-  let filePath = ''
-  const content = await readdir(path)
-  // tslint:disable-next-line:forin
-  for (const i in content) {
-    const fullPath = `${path}/${content[i]}`
-      if (lstatSync(fullPath).isDirectory()) {
-        const tempFilePath = await findFile(uploadFile, fullPath, logger)
-        if (tempFilePath !== '') {
-          filePath = tempFilePath
-        }
-      }
-      else if (fullPath.includes(uploadFile.name)) {
-        filePath = fullPath
-      }
-  }
-  return filePath
 }
 
 export async function uploadAndExtractFiles(uploadFile: UploadFile, path: string, mainPath: string) {
@@ -42,7 +22,7 @@ export async function uploadAndExtractFiles(uploadFile: UploadFile, path: string
       } else{
         const filePath = fullPath.replace(`${mainPath}/`, '')
         let fileContent = ''
-        if (fullPath.includes(uploadFile.name)) {
+        if (fullPath.includes(uploadFile.title)) {
           fileContent = uploadFile.file
         } else {
           fileContent = await readJSON(fullPath)
