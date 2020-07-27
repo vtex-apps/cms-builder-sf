@@ -2,7 +2,8 @@ import { json } from 'co-body'
 import { STORE_STATE } from './../util/constants'
 
 import { parseAppId } from '@vtex/api'
-import { createNewAppFiles, getFilesForBuilderHub } from '../util/appFiles'
+import { ensureDir } from 'fs-extra'
+import { createNewAppFiles, extractFilesAndUpdate, getFilesForBuilderHub } from '../util/appFiles'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
@@ -13,6 +14,7 @@ export async function publishStoreFromPage(
   next: () => Promise<any>
 ) {
   const { logger } = ctx.vtex
+  let newApp = false
   const body = await json(ctx.req)
 
   const uploadFile: UploadFile = {
@@ -30,12 +32,30 @@ export async function publishStoreFromPage(
     appID = versions.data[index].versionIdentifier
   } catch(err) {
     logger.warn(`Could not find previous versions of ${STORE_STATE}`)
+    newApp = true
   }
 
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
-  const appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
+  let appFiles
+  if(newApp === true){
+    appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
+  } else {
+    const filePath = 'appFilesFromRegistry'
+    await ensureDir(filePath)
+    const oldVersion = parseAppId(appID).version
+    await ctx.clients.registry.unpackAppBundle(
+      appName,
+      oldVersion,
+      '',
+      filePath,
+      false
+    )
+    const sourceCodePath = `${filePath}/src`
+    appFiles = await extractFilesAndUpdate(uploadFile, sourceCodePath, sourceCodePath, version)
+  }
+
   const files = getFilesForBuilderHub(appFiles)
 
   const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)

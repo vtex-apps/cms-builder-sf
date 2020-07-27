@@ -17,6 +17,13 @@ export function getAppId (manifest: Manifest): string {
   return `${manifest.vendor}.${manifest.name}@${manifest.version}`
 }
 
+export function makeEmptyManifest(){
+  const dependencies = defaultDependencies()
+  const builders = {'store': '0.x'}
+  const manifest: Manifest = {name: '', vendor: '', version: '', builders, dependencies}
+  return manifest
+}
+
 export function defaultDependencies () {
   const dependencies: {[key: string]: string} = {'vtex.store': '2.x',
   'vtex.store-header': '2.x',
@@ -65,7 +72,7 @@ export function defaultDependencies () {
   return dependencies
 }
 
-function validateManifest (manifest: Manifest): void {
+export function validateManifest (manifest: Manifest): void {
   const vendorRegex = new RegExp(`^[\\w_-]+$`)
   const nameRegex = new RegExp(`^[\\w_-]+$`)
   const versionRegex = new RegExp(`^\\d+\\.\\d+\\.\\d+(-.*)?$`)
@@ -97,7 +104,6 @@ export async function parseManifest (codePath: string): Promise<Manifest> {
   let manifest
   try {
     const readjson = await readJson(manifestPath)
-    console.log({readjson})
     manifest = readjson as Manifest
   } catch (error) {
     console.log(error)
