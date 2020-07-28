@@ -5,7 +5,8 @@ import { STORE_STATE } from './../util/constants'
 import { parseAppId } from '@vtex/api'
 import { createBaseFolderWithStore } from '../util/extractFiles'
 import { makeDefaultManifest } from '../util/manifest'
-import { makeRoutes, UploadFile } from '../util/uploadFile'
+import { getRouteJSON, makeRoutes } from '../util/routes'
+import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
 const jsonResponse = (newAppID: string) => `{"appID": "${newAppID}"}`
@@ -50,11 +51,10 @@ export async function publishStoreFromPage(
     content: uploadFile.file,
     path: `store/blocks/${uploadFile.name}`,
   }
-  const routesContent = makeRoutes(body.meta.page, body.meta.slug)
+  const routes = makeRoutes(body.meta.page, body.meta.slug)
   const manifestFile: File = {path: 'manifest.json', content: JSON.stringify(manifest)}
-  const routes: File = { path: `store/routes.json`, content: routesContent }
-  const files = [manifestFile, page, routes]
-
+  const routesFile: File = { path: `store/routes.json`, content: getRouteJSON(routes) }
+  const files = [manifestFile, page, routesFile]
 
   const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
   logger.info(`Build result message: ${publishedApp.message}`)
