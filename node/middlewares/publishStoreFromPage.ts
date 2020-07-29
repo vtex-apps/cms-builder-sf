@@ -9,7 +9,7 @@ import { getRouteJSON, makeRoutes } from '../util/routes'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
-const jsonResponse = (newAppID: string) => `{"appID": "${newAppID}"}`
+const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
 
 export async function publishStoreFromPage(
   ctx: Context,
