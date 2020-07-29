@@ -1,11 +1,8 @@
-import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { json } from 'co-body'
 import { STORE_STATE } from './../util/constants'
 
 import { parseAppId } from '@vtex/api'
-import { createBaseFolderWithStore } from '../util/extractFiles'
-import { makeDefaultManifest } from '../util/manifest'
-import { getRouteJSON, makeRoutes } from '../util/routes'
+import { createNewAppFiles, getFilesForBuilderHub } from '../util/appFiles'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
@@ -20,8 +17,9 @@ export async function publishStoreFromPage(
 
   const uploadFile: UploadFile = {
     file: JSON.stringify(body.blocks),
-    name: `${body.meta.title}.json`,
-    path: '',
+    page: body.meta.page,
+    slug: body.meta.slug,
+    title: body.meta.title,
   }
 
   const appName = `${ctx.vtex.account}.${STORE_STATE}`
@@ -37,24 +35,8 @@ export async function publishStoreFromPage(
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
-  await createBaseFolderWithStore(
-    STORE_STATE,
-    ctx.vtex.account,
-    ctx.vtex.workspace
-  )
-  const manifest = await makeDefaultManifest(
-    STORE_STATE,
-    version,
-    ctx.vtex.account
-  )
-  const page: File = {
-    content: uploadFile.file,
-    path: `store/blocks/${uploadFile.name}`,
-  }
-  const routes = makeRoutes(body.meta.page, body.meta.slug)
-  const manifestFile: File = {path: 'manifest.json', content: JSON.stringify(manifest)}
-  const routesFile: File = { path: `store/routes.json`, content: getRouteJSON(routes) }
-  const files = [manifestFile, page, routesFile]
+  const appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
+  const files = getFilesForBuilderHub(appFiles)
 
   const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
   logger.info(`Build result message: ${publishedApp.message}`)
