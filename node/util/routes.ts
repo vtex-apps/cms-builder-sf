@@ -1,5 +1,6 @@
 import { readJson } from 'fs-extra'
 import InvalidRoutes from '../errors/invalidRoutes'
+import RouteNotFound from '../errors/routeNotFound'
 
 interface PagePath {
   path: string
@@ -27,7 +28,7 @@ export function makeEmptyRoutes(){
 
 export function addRoute(routes: Routes, key: string, path: string){
   const newPagePath: PagePath = {path}
-  const newPageRoute: {[key: string]: PagePath} = { [key] : newPagePath }
+  const newPageRoute: PageRoute = { [key] : newPagePath }
   routes.routes.push(newPageRoute)
   return routes
 }
@@ -51,10 +52,10 @@ export function removeRoute(routes: Routes, key: string){
     if(currentKey === key) {
       const index = routes.routes.indexOf(pageRoute)
       routes.routes.splice(index, 1)
-      return {success: true, routes}
+      return routes
     }
   }
-  return {success: false, routes}
+  throw new RouteNotFound(`Could not find the route of the page ${key}`)
 }
 
 export async function parseRoutes(path: string){
@@ -64,9 +65,12 @@ export async function parseRoutes(path: string){
     const newjson = '[' + JSON.stringify(readjson) + ']'
     const parsedJson = JSON.parse(newjson)
     // tslint:disable-next-line:forin
-    for (const element of parsedJson) {
-      const pageRoute = element as PageRoute
-      routes.routes.push(pageRoute)
+    for (const elements of parsedJson) {
+      for (const [key, value] of Object.entries(elements)){
+        const pagePath = value as PagePath
+        const pageRoute: PageRoute = { [key] : pagePath }
+        routes.routes.push(pageRoute)
+      }
     }
   } catch (error) {
     console.log(error)

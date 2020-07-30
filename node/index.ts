@@ -13,6 +13,7 @@ import { Clients } from './clients'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
+import { unpublishApp } from './middlewares/unpublishApp'
 
 const TIMEOUT_MS = 8000
 
@@ -60,6 +61,10 @@ export default new Service<Clients, State, ParamsContext>({
     status: method({
       DEFAULT: methodNotAllowed,
       POST: [publishStoreFromPage],
+    }),
+    unpublish: method({
+      DEFAULT: methodNotAllowed,
+      POST: [unpublishApp],
     }),
   },
 })

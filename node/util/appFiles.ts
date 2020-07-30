@@ -3,7 +3,7 @@ import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { lstatSync, readdir, readJSON } from 'fs-extra'
 import { STORE_STATE } from './constants'
 import { makeDefaultManifest, makeEmptyManifest, Manifest, parseManifest, validateManifest } from './manifest'
-import { addRoute, getRouteJSON, makeEmptyRoutes, makeRoutes, parseRoutes, Routes, validateRoutes } from './routes'
+import { addRoute, getRouteJSON, makeEmptyRoutes, makeRoutes, parseRoutes, removeRoute, Routes, validateRoutes } from './routes'
 import { UploadFile } from './uploadFile'
 
 export interface AppFiles {
@@ -40,10 +40,17 @@ export function getFilesForBuilderHub(appFiles: AppFiles){
 
 export async function extractFilesAndUpdate(uploadFile: UploadFile, path: string, mainPath: string, version: string) {
   let appFiles = await extractFiles(path, mainPath)
-
   validateManifest(appFiles.manifest)
   validateRoutes(appFiles.routes)
   appFiles = updateAppFiles(appFiles, uploadFile, version)
+  return appFiles
+}
+
+export async function extractFilesAndRemovePage(pageToRemove: string, path: string, mainPath: string, version: string){
+  let appFiles = await extractFiles(path, mainPath)
+  validateManifest(appFiles.manifest)
+  validateRoutes(appFiles.routes)
+  appFiles = removePage(appFiles, pageToRemove, version)
   return appFiles
 }
 
@@ -107,6 +114,20 @@ function addPage(appFiles: AppFiles, uploadFile: UploadFile){
   }
   appFiles.files.push(newPageFile)
   appFiles.routes = addRoute(appFiles.routes, uploadFile.page, uploadFile.slug)
+
+  return appFiles
+}
+
+function removePage(appFiles: AppFiles, pageToRemove: string, version: string){
+  const routes = removeRoute(appFiles.routes, pageToRemove)
+  appFiles.files.forEach((file, index) => {
+    if(file.content.includes(pageToRemove)){
+      appFiles.files.splice(index, 1)
+    }
+  })
+
+  appFiles.routes = routes
+  appFiles.manifest.version = version
 
   return appFiles
 }
