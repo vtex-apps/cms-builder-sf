@@ -1,5 +1,5 @@
 import { json } from 'co-body'
-import { STORE_STATE } from './../util/constants'
+import { STORE_STATE } from '../util/constants'
 
 import { parseAppId } from '@vtex/api'
 import { ensureDir } from 'fs-extra'
@@ -8,7 +8,7 @@ import { bumpPatchVersion } from '../util/versionControl'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
 
-export async function unpublishApp(
+export async function unpublishPage(
   ctx: Context,
   next: () => Promise<any>
 ) {
