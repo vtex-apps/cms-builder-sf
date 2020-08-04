@@ -12,6 +12,10 @@
     "install": {
       "path": "/checkPublishedApp",
       "public": false
+    },
+    "unpublish": {
+      "path": "/unpublishPage",
+      "public": false
     }
   }
 }

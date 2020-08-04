@@ -36,8 +36,6 @@ export async function checkPublishedApp(
     return
   }
 
-  console.log(installResponse)
-
   ctx.status = 201
   ctx.body = `{"message": "success", "code": "SUCCESS"}`
 
