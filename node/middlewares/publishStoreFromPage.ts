@@ -43,7 +43,7 @@ export async function publishStoreFromPage(
     appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
   } else {
     const filePath = 'appFilesFromRegistry'
-    await ensureDir(filePath)
+    await ensureDir(`${filePath}/src`)
     const oldVersion = parseAppId(appID).version
     await ctx.clients.registry.unpackAppBundle(
       appName,
