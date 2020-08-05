@@ -5,6 +5,7 @@ import { parseAppId } from '@vtex/api'
 import { ensureDir } from 'fs-extra'
 import { extractFilesAndRemovePage, getFilesForBuilderHub } from '../util/appFiles'
 import { bumpPatchVersion } from '../util/versionControl'
+import { returnResponseError } from '../errors/responseError'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
 
@@ -45,7 +46,13 @@ export async function unpublishPage(
     false
   )
   const sourceCodePath = `${filePath}/src`
-  const appFiles = await extractFilesAndRemovePage(pageToDelete, sourceCodePath, sourceCodePath, version)
+
+  let appFiles
+  try {
+    appFiles = await extractFilesAndRemovePage(pageToDelete, sourceCodePath, sourceCodePath, version)
+  } catch(err){
+    return returnResponseError('Could not find page to delete', 'PAGE_NOT_FOUND', ctx, next)
+  }
 
   const files = getFilesForBuilderHub(appFiles)
 
