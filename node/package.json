@@ -1,11 +1,13 @@
 {
   "dependencies": {
+    "@types/stream-to-promise": "^2.2.1",
     "co-body": "^6.0.0",
     "extendable-error": "^0.1.5",
     "fs-extra": "^9.0.0",
     "ramda": "^0.25.0",
     "ramda-adjunct": "^2.27.0",
-    "semver": "^7.3.2"
+    "semver": "^7.3.2",
+    "stream-to-promise": "^2.2.0"
   },
   "devDependencies": {
     "@types/archiver": "^3.1.0",

@@ -1,4 +1,5 @@
 import { json } from 'co-body'
+import streamToPromise from 'stream-to-promise'
 import { STORE_STATE } from './../util/constants'
 
 import { parseAppId } from '@vtex/api'
@@ -38,20 +39,22 @@ export async function publishStoreFromPage(
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
+
   let appFiles
   if(newApp === true){
     appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
   } else {
     const filePath = 'appFilesFromRegistry'
-    await ensureDir(`${filePath}/src`)
+    await ensureDir(filePath)
     const oldVersion = parseAppId(appID).version
-    await ctx.clients.registry.unpackAppBundle(
+    const stream = await ctx.clients.registry.unpackAppBundle(
       appName,
       oldVersion,
       '',
       filePath,
       false
     )
+    await streamToPromise(stream)
     const sourceCodePath = `${filePath}/src`
     appFiles = await extractFilesAndUpdate(uploadFile, sourceCodePath, sourceCodePath, version)
   }

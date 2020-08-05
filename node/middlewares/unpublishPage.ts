@@ -1,4 +1,5 @@
 import { json } from 'co-body'
+import streamToPromise from 'stream-to-promise'
 import { STORE_STATE } from '../util/constants'
 
 import { parseAppId } from '@vtex/api'
@@ -38,13 +39,14 @@ export async function unpublishPage(
   const filePath = 'appFilesFromRegistry'
   await ensureDir(filePath)
   const oldVersion = parseAppId(appID).version
-  await ctx.clients.registry.unpackAppBundle(
+  const stream = await ctx.clients.registry.unpackAppBundle(
     appName,
     oldVersion,
     '',
     filePath,
     false
   )
+  await streamToPromise(stream)
   const sourceCodePath = `${filePath}/src`
 
   let appFiles
