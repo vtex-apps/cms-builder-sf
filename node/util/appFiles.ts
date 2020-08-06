@@ -3,7 +3,7 @@ import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { lstatSync, readdir, readJSON } from 'fs-extra'
 import { STORE_STATE } from './constants'
 import { makeDefaultManifest, makeEmptyManifest, Manifest, parseManifest, validateManifest } from './manifest'
-import { addRoute, getRouteJSON, makeEmptyRoutes, makeRoutes, parseRoutes, removeRoute, Routes, validateRoutes } from './routes'
+import { addRoute, getRouteJSON, makeEmptyRoutes, makeRoutes, parseRoutes, removeRoute, Routes } from './routes'
 import { UploadFile } from './uploadFile'
 
 export interface AppFiles {
@@ -40,8 +40,8 @@ export function getFilesForBuilderHub(appFiles: AppFiles){
 
 export async function extractFilesAndUpdate(uploadFile: UploadFile, path: string, mainPath: string, version: string) {
   let appFiles = await extractFiles(path, mainPath)
+  console.log(appFiles.routes.routes, 'rotas encontradas pelo troco')
   validateManifest(appFiles.manifest)
-  validateRoutes(appFiles.routes)
   appFiles = updateAppFiles(appFiles, uploadFile, version)
   return appFiles
 }
@@ -49,7 +49,6 @@ export async function extractFilesAndUpdate(uploadFile: UploadFile, path: string
 export async function extractFilesAndRemovePage(pageToRemove: string, path: string, mainPath: string, version: string){
   let appFiles = await extractFiles(path, mainPath)
   validateManifest(appFiles.manifest)
-  validateRoutes(appFiles.routes)
   appFiles = removePage(appFiles, pageToRemove, version)
   return appFiles
 }

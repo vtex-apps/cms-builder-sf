@@ -22,7 +22,7 @@ export function makeRoutes(key: string, path: string){
 }
 
 export function makeEmptyRoutes(){
-  const routes = makeRoutes('','')
+  const routes: Routes = {routes: []}
   return routes
 }
 
@@ -62,10 +62,11 @@ export function removeRoute(routes: Routes, key: string){
 }
 
 export async function parseRoutes(path: string){
-  const routes: Routes = {routes: []}
+  const routes = makeEmptyRoutes()
   try {
     const readjson = await readJson(path)
-    const newjson = '[' + JSON.stringify(readjson) + ']'
+    const jsonString = JSON.stringify(readjson)
+    const newjson = '[' + jsonString + ']'
     const parsedJson = JSON.parse(newjson)
     // tslint:disable-next-line:forin
     for (const elements of parsedJson) {
@@ -80,10 +81,4 @@ export async function parseRoutes(path: string){
     throw new InvalidRoutes('routes.json doesn\'t exist or is malformed.')
   }
   return routes
-}
-
-export function validateRoutes(routes: Routes){
-  if(routes.routes.length === 0){
-    throw new InvalidRoutes('There were no valid routes')
-  }
 }
