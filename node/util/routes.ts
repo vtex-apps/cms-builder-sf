@@ -34,6 +34,9 @@ export function addRoute(routes: Routes, key: string, path: string){
 }
 
 export function getRouteJSON(routes: Routes){
+  if(routes.routes.length === 0){
+    return '{}'
+  }
   let json = '{'
   // tslint:disable-next-line:forin
   for( const element of routes.routes ){
