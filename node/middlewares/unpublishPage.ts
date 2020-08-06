@@ -4,9 +4,9 @@ import { STORE_STATE } from '../util/constants'
 
 import { parseAppId } from '@vtex/api'
 import { ensureDir } from 'fs-extra'
+import { returnResponseError } from '../errors/responseError'
 import { extractFilesAndRemovePage, getFilesForBuilderHub } from '../util/appFiles'
 import { bumpPatchVersion } from '../util/versionControl'
-import { returnResponseError } from '../errors/responseError'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
 
