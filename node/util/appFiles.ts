@@ -40,7 +40,6 @@ export function getFilesForBuilderHub(appFiles: AppFiles){
 
 export async function extractFilesAndUpdate(uploadFile: UploadFile, path: string, mainPath: string, version: string) {
   let appFiles = await extractFiles(path, mainPath)
-  console.log(appFiles.routes.routes, 'rotas encontradas pelo troco')
   validateManifest(appFiles.manifest)
   appFiles = updateAppFiles(appFiles, uploadFile, version)
   return appFiles
