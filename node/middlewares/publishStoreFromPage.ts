@@ -4,6 +4,7 @@ import { STORE_STATE } from './../util/constants'
 
 import { parseAppId } from '@vtex/api'
 import { ensureDir } from 'fs-extra'
+import { returnResponseError } from '../errors/responseError'
 import { createNewAppFiles, extractFilesAndUpdate, getFilesForBuilderHub } from '../util/appFiles'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
@@ -23,6 +24,15 @@ export async function publishStoreFromPage(
     page: body.meta.page,
     slug: body.meta.slug,
     title: body.meta.title,
+  }
+
+  if(uploadFile.file === undefined
+    || uploadFile.page === undefined
+    || uploadFile.slug === undefined
+    || uploadFile.title === undefined
+  ) {
+    logger.warn('Missing a parameter for the uploadFile')
+    return returnResponseError('Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug', 'BUILD_FAILED', ctx, next)
   }
 
   const appName = `${ctx.vtex.account}.${STORE_STATE}`
