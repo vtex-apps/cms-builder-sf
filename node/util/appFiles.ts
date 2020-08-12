@@ -15,7 +15,7 @@ export interface AppFiles {
 export async function createNewAppFiles(uploadFile: UploadFile, version: string, account: string){
   const pageFile: File = {
     content: uploadFile.file,
-    path: `store/blocks/${uploadFile.title}.json`,
+    path: `store/blocks/${uploadFile.page}.json`,
   }
   const manifest = await makeDefaultManifest(
     STORE_STATE,
@@ -90,7 +90,7 @@ async function extractFiles(path: string, mainPath: string){
 function updateAppFiles(appFiles: AppFiles, uploadFile: UploadFile, version: string){
   let foundFile = false
   appFiles.files.forEach(file => {
-    if(file.path.includes(`${uploadFile.title}.json`)) {
+    if(file.path.includes(`${uploadFile.page}.json`)) {
       file.content = uploadFile.file
       foundFile = true
     }
@@ -108,7 +108,7 @@ function updateAppFiles(appFiles: AppFiles, uploadFile: UploadFile, version: str
 function addPage(appFiles: AppFiles, uploadFile: UploadFile){
   const newPageFile: File = {
     content: uploadFile.file,
-    path: `store/blocks/${uploadFile.title}.json`,
+    path: `store/blocks/${uploadFile.page}.json`,
   }
   appFiles.files.push(newPageFile)
   appFiles.routes = addRoute(appFiles.routes, uploadFile.page, uploadFile.slug)
