@@ -26,11 +26,7 @@ export async function publishStoreFromPage(
     title: body.meta.title,
   }
 
-  if(uploadFile.file === undefined
-    || uploadFile.page === undefined
-    || uploadFile.slug === undefined
-    || uploadFile.title === undefined
-  ) {
+  if(!uploadFile.file|| !uploadFile.page || !uploadFile.slug|| !uploadFile.title) {
     logger.warn('Missing a parameter for the uploadFile')
     return returnResponseError('Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug', 'BUILD_FAILED', ctx, next)
   }
