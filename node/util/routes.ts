@@ -33,6 +33,29 @@ export function addRoute(routes: Routes, key: string, path: string){
   return routes
 }
 
+export function doesRouteExist(routes: Routes, page: string){
+  for( const element of routes.routes ){
+    const currentPage = Object.keys(element)[0]
+    if(currentPage === page) {
+      return true
+    }
+  }
+  return false
+}
+
+export function updateRoutes(routes: Routes, key: string, path: string){
+  routes.routes.forEach(pageRoute => {
+    const currentPage = Object.keys(pageRoute)[0]
+    if(currentPage === key){
+      const index = routes.routes.indexOf(pageRoute)
+      const newPagePath: PagePath = {path}
+      const newPageRoute: PageRoute = { [key] : newPagePath }
+      routes.routes[index] = newPageRoute
+    }
+  })
+  return routes
+}
+
 export function getRouteJSON(routes: Routes){
   if(routes.routes.length === 0){
     return '{}'
