@@ -54,13 +54,15 @@ export function updateRoutes(routes: Routes, key: string, path: string) {
   routes.routes.forEach(pageRoute => {
     const [currentPage] = Object.keys(pageRoute)
 
-    if (currentPage === key) {
-      const index = routes.routes.indexOf(pageRoute)
-      const newPagePath: PagePath = { path }
-      const newPageRoute: PageRoute = { [key]: newPagePath }
-
-      routes.routes[index] = newPageRoute
+    if (currentPage !== key) {
+      return
     }
+
+    const index = routes.routes.indexOf(pageRoute)
+    const newPagePath: PagePath = { path }
+    const newPageRoute: PageRoute = { [key]: newPagePath }
+
+    routes.routes[index] = newPageRoute
   })
 
   return routes
@@ -73,7 +75,6 @@ export function getRouteJSON(routes: Routes) {
 
   let json = '{'
 
-  // tslint:disable-next-line:forin
   for (const element of routes.routes) {
     let pageRoute = JSON.stringify(element)
 
@@ -81,13 +82,12 @@ export function getRouteJSON(routes: Routes) {
     json = `${json} ${pageRoute},`
   }
 
-  json = `${json.substring(0, json.length - 1)}}`
+  json = `${json.substring(0, json.length - 1)} }`
 
   return json
 }
 
 export function removeRoute(routes: Routes, key: string) {
-  // tslint:disable-next-line:forin
   for (const pageRoute of routes.routes) {
     const [currentKey] = Object.keys(pageRoute)
 
@@ -112,7 +112,6 @@ export async function parseRoutes(path: string) {
     const newjson = `[${jsonString}]`
     const parsedJson = JSON.parse(newjson)
 
-    // tslint:disable-next-line:forin
     for (const elements of parsedJson) {
       for (const [key, value] of Object.entries(elements)) {
         const pagePath = value as PagePath

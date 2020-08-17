@@ -86,12 +86,12 @@ export async function publishStoreFromPage(
     await streamToPromise(stream)
     const sourceCodePath = `${filePath}/src`
 
-    appFiles = await extractFilesAndUpdate(
+    appFiles = await extractFilesAndUpdate({
       uploadFile,
-      sourceCodePath,
-      sourceCodePath,
-      version
-    )
+      path: sourceCodePath,
+      mainPath: sourceCodePath,
+      version,
+    })
   }
 
   const files = getFilesForBuilderHub(appFiles)

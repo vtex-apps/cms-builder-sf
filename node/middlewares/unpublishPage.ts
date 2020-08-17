@@ -17,7 +17,7 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
   const { logger } = ctx.vtex
   const body = await json(ctx.req)
 
-  const pageToDelete = body.page
+  const pageToRemove = body.page
 
   const appName = `${ctx.vtex.account}.${STORE_STATE}`
   let appID = `${appName}@0.0.0`
@@ -61,15 +61,15 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
   let appFiles
 
   try {
-    appFiles = await extractFilesAndRemovePage(
-      pageToDelete,
-      sourceCodePath,
-      sourceCodePath,
-      version
-    )
+    appFiles = await extractFilesAndRemovePage({
+      pageToRemove,
+      path: sourceCodePath,
+      mainPath: sourceCodePath,
+      version,
+    })
   } catch (err) {
     return returnResponseError({
-      message: 'Could not find page to delete',
+      message: 'Could not find a page to delete',
       code: 'PAGE_NOT_FOUND',
       ctx,
       next,
