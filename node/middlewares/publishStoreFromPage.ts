@@ -1,11 +1,15 @@
 import { json } from 'co-body'
 import streamToPromise from 'stream-to-promise'
-import { STORE_STATE } from './../util/constants'
-
 import { parseAppId } from '@vtex/api'
 import { ensureDir } from 'fs-extra'
+
+import { STORE_STATE } from '../util/constants'
 import { returnResponseError } from '../errors/responseError'
-import { createNewAppFiles, extractFilesAndUpdate, getFilesForBuilderHub } from '../util/appFiles'
+import {
+  createNewAppFiles,
+  extractFilesAndUpdate,
+  getFilesForBuilderHub,
+} from '../util/appFiles'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
@@ -26,18 +30,34 @@ export async function publishStoreFromPage(
     title: body.meta.title,
   }
 
-  if(!uploadFile.file|| !uploadFile.page || !uploadFile.slug|| !uploadFile.title) {
+  if (
+    !uploadFile.file ||
+    !uploadFile.page ||
+    !uploadFile.slug ||
+    !uploadFile.title
+  ) {
     logger.warn('Missing a parameter for the uploadFile')
-    return returnResponseError('Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug', 'BUILD_FAILED', ctx, next)
+
+    return returnResponseError(
+      'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug',
+      'BUILD_FAILED',
+      ctx,
+      next
+    )
   }
 
   const appName = `${ctx.vtex.account}.${STORE_STATE}`
   let appID = `${appName}@0.0.0`
+
   try {
-    const versions = await ctx.clients.registry.listVersionsByApp(`${ctx.vtex.account}.${STORE_STATE}`)
+    const versions = await ctx.clients.registry.listVersionsByApp(
+      `${ctx.vtex.account}.${STORE_STATE}`
+    )
+
     const index = versions.data.length - 1
+
     appID = versions.data[index].versionIdentifier
-  } catch(err) {
+  } catch (err) {
     logger.warn(`Could not find previous versions of ${STORE_STATE}`)
     newApp = true
   }
@@ -45,12 +65,13 @@ export async function publishStoreFromPage(
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
-
   let appFiles
-  if(newApp === true){
+
+  if (newApp === true) {
     appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
   } else {
     const filePath = 'appFilesFromRegistry'
+
     await ensureDir(filePath)
     const oldVersion = parseAppId(appID).version
     const stream = await ctx.clients.registry.unpackAppBundle(
@@ -60,14 +81,22 @@ export async function publishStoreFromPage(
       filePath,
       false
     )
+
     await streamToPromise(stream)
     const sourceCodePath = `${filePath}/src`
-    appFiles = await extractFilesAndUpdate(uploadFile, sourceCodePath, sourceCodePath, version)
+
+    appFiles = await extractFilesAndUpdate(
+      uploadFile,
+      sourceCodePath,
+      sourceCodePath,
+      version
+    )
   }
 
   const files = getFilesForBuilderHub(appFiles)
 
   const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(
     `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
