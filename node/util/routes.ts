@@ -35,7 +35,7 @@ export function addRoute(routes: Routes, key: string, path: string) {
 
 export function doesRouteExist(routes: Routes, page: string) {
   for (const element of routes.routes) {
-    const currentPage = Object.keys(element)[0]
+    const [currentPage] = Object.keys(element)
     if (currentPage === page) {
       return true
     }
@@ -45,7 +45,7 @@ export function doesRouteExist(routes: Routes, page: string) {
 
 export function updateRoutes(routes: Routes, key: string, path: string) {
   routes.routes.forEach(pageRoute => {
-    const currentPage = Object.keys(pageRoute)[0]
+    const [currentPage] = Object.keys(pageRoute)
     if (currentPage === key) {
       const index = routes.routes.indexOf(pageRoute)
       const newPagePath: PagePath = { path }
@@ -100,7 +100,7 @@ export async function parseRoutes(path: string) {
       }
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     throw new InvalidRoutes("routes.json doesn't exist or is malformed.")
   }
   return routes
