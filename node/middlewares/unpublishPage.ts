@@ -68,12 +68,12 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
       version
     )
   } catch (err) {
-    return returnResponseError(
-      'Could not find page to delete',
-      'PAGE_NOT_FOUND',
+    return returnResponseError({
+      message: 'Could not find page to delete',
+      code: 'PAGE_NOT_FOUND',
       ctx,
-      next
-    )
+      next,
+    })
   }
 
   const files = getFilesForBuilderHub(appFiles)

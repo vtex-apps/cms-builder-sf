@@ -38,12 +38,13 @@ export async function publishStoreFromPage(
   ) {
     logger.warn('Missing a parameter for the uploadFile')
 
-    return returnResponseError(
-      'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug',
-      'BUILD_FAILED',
+    return returnResponseError({
+      message:
+        'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug',
+      code: 'BUILD_FAILED',
       ctx,
-      next
-    )
+      next,
+    })
   }
 
   const appName = `${ctx.vtex.account}.${STORE_STATE}`

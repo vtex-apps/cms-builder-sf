@@ -1,4 +1,5 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+
 import { GraphQlError } from '../util/errors'
 
 export interface InstallResponse {
@@ -22,12 +23,15 @@ export default class Billing extends AppClient {
         billingOptions
       }
     }`
+
     const {
       data: { data, errors },
     } = await this.http.postRaw<any>(`/_v/graphql`, { query: graphQLQuery })
+
     if (errors) {
       throw new GraphQlError(errors)
     }
+
     return data.install
   }
 }
