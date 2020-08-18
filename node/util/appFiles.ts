@@ -3,7 +3,7 @@ import { File } from '@vtex/api/lib/clients/infra/Registry'
 import { lstatSync, readdir, readJSON } from 'fs-extra'
 import { STORE_STATE } from './constants'
 import { makeDefaultManifest, makeEmptyManifest, Manifest, parseManifest, validateManifest } from './manifest'
-import { addRoute, getRouteJSON, makeEmptyRoutes, makeRoutes, parseRoutes, removeRoute, Routes } from './routes'
+import { addRoute, doesRouteExist, getRouteJSON, makeEmptyRoutes, makeRoutes, parseRoutes, removeRoute, Routes, updateRoutes } from './routes'
 import { UploadFile } from './uploadFile'
 
 export interface AppFiles {
@@ -88,15 +88,9 @@ async function extractFiles(path: string, mainPath: string){
 }
 
 function updateAppFiles(appFiles: AppFiles, uploadFile: UploadFile, version: string){
-  let foundFile = false
-  appFiles.files.forEach(file => {
-    if(file.path.includes(`${uploadFile.page}.json`)) {
-      file.content = uploadFile.file
-      foundFile = true
-    }
-  })
-
-  if(foundFile === false){
+  if(doesRouteExist(appFiles.routes, uploadFile.page)) {
+    appFiles = updatePage(appFiles, uploadFile)
+  } else {
     appFiles = addPage(appFiles, uploadFile)
   }
 
@@ -114,6 +108,19 @@ function addPage(appFiles: AppFiles, uploadFile: UploadFile){
   appFiles.routes = addRoute(appFiles.routes, uploadFile.page, uploadFile.slug)
 
   return appFiles
+}
+
+function updatePage(appFiles: AppFiles, uploadFile: UploadFile){
+  appFiles.files.forEach(file => {
+    if(file.path.includes(`${uploadFile.page}.json`)) {
+      file.content = uploadFile.file
+    }
+  })
+
+  appFiles.routes = updateRoutes(appFiles.routes, uploadFile.page, uploadFile.slug)
+
+  return appFiles
+
 }
 
 function removePage(appFiles: AppFiles, pageToRemove: string, version: string){
