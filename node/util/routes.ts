@@ -89,7 +89,7 @@ export function getRouteJSON(routes: Routes) {
 export function removeRoute(routes: Routes, key: string) {
   // tslint:disable-next-line:forin
   for (const pageRoute of routes.routes) {
-    const [currentKey] = Object.keys(element)
+    const [currentKey] = Object.keys(pageRoute)
 
     if (currentKey === key) {
       const index = routes.routes.indexOf(pageRoute)
