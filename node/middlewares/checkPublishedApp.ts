@@ -1,5 +1,6 @@
 import { parseAppId } from '@vtex/api'
 import { json } from 'co-body'
+
 import { InstallResponse } from '../clients/billing'
 import { returnResponseError } from '../errors/responseError'
 
@@ -7,7 +8,6 @@ export async function checkPublishedApp(
   ctx: Context,
   next: () => Promise<any>
 ) {
-
   const { logger } = ctx.vtex
   const body = await json(ctx.req)
 
@@ -16,18 +16,31 @@ export async function checkPublishedApp(
 
   try {
     await ctx.clients.registry.getAppManifest(name, version)
-  } catch(err) {
+  } catch (err) {
     logger.warn(`Could not find ${name}`)
-    await returnResponseError('Error in build - could not find app', 'BUILD_FAILED', ctx, next)
+    await returnResponseError({
+      message: 'Error in build - could not find app',
+      code: 'BUILD_FAILED',
+      ctx,
+      next,
+    })
+
     return
   }
 
-  let installResponse: InstallResponse = {code:''}
+  let installResponse: InstallResponse = { code: '' }
+
   try {
     installResponse = await ctx.clients.billings.installApp(appID, true, false)
-  } catch(err) {
+  } catch (err) {
     logger.warn(`Could not install ${name}`)
-    await returnResponseError(JSON.stringify(installResponse), 'INSTALLATION_ERROR', ctx, next)
+    await returnResponseError({
+      message: JSON.stringify(installResponse),
+      code: 'INSTALLATION_ERROR',
+      ctx,
+      next,
+    })
+
     return
   }
 
