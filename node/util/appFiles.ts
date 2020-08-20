@@ -28,14 +28,22 @@ export interface AppFiles {
   routes: Routes
 }
 
+export async function createEmptyAppFiles(version: string, account: string) {
+  const manifest = await makeDefaultManifest(STORE_STATE, version, account)
+  const routes = makeEmptyRoutes()
+  const appFiles: AppFiles = { files: [], manifest, routes }
+
+  return appFiles
+}
+
 export async function createNewAppFiles(
   uploadFile: UploadFile,
   version: string,
   account: string
 ) {
   const pageFile: File = {
-    content: uploadFile.file,
     path: `store/blocks/${uploadFile.page}.json`,
+    content: uploadFile.file,
   }
 
   const manifest = await makeDefaultManifest(STORE_STATE, version, account)
@@ -64,7 +72,7 @@ export function getFilesForBuilderHub(appFiles: AppFiles) {
   return files
 }
 
-type ExtractUpdate = {
+interface ExtractUpdate {
   uploadFile: UploadFile
   path: string
   mainPath: string
@@ -85,7 +93,7 @@ export async function extractFilesAndUpdate({
   return appFiles
 }
 
-type ExtractRemove = {
+interface ExtractRemove {
   pageToRemove: string
   path: string
   mainPath: string
@@ -113,6 +121,7 @@ async function extractFiles(path: string, mainPath: string) {
   let manifest = makeEmptyManifest()
   let routes = makeEmptyRoutes()
 
+  // tslint:disable-next-line:forin
   for (const i in content) {
     const fullPath = `${path}/${content[i]}`
 
@@ -173,8 +182,8 @@ function updateAppFiles(
 
 function addPage(appFiles: AppFiles, uploadFile: UploadFile) {
   const newPageFile: File = {
-    content: uploadFile.file,
     path: `store/blocks/${uploadFile.page}.json`,
+    content: uploadFile.file,
   }
 
   appFiles.files.push(newPageFile)

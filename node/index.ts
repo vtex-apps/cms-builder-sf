@@ -11,6 +11,7 @@ import {
 
 import { Clients } from './clients'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
+import { emptyApp } from './middlewares/emptyApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 import { unpublishPage } from './middlewares/unpublishPage'
@@ -54,7 +55,10 @@ declare global {
 export default new Service<Clients, State, ParamsContext>({
   clients,
   routes: {
-    // `status` is the route ID from service.json. It maps to an array of middlewares (or a single handler).
+    emptyApp: method({
+      DEFAULT: methodNotAllowed,
+      POST: [emptyApp],
+    }),
     install: method({
       DEFAULT: methodNotAllowed,
       PUT: [checkPublishedApp],
