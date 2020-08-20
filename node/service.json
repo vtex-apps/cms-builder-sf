@@ -16,6 +16,10 @@
     "unpublish": {
       "path": "/unpublishPage",
       "public": false
+    },
+    "emptyApp": {
+      "path": "/publishEmptyApp",
+      "public": false
     }
   }
 }

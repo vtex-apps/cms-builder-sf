@@ -28,6 +28,14 @@ export interface AppFiles {
   routes: Routes
 }
 
+export async function createEmptyAppFiles(version: string, account: string) {
+  const manifest = await makeDefaultManifest(STORE_STATE, version, account)
+  const routes = makeEmptyRoutes()
+  const appFiles: AppFiles = { files: [], manifest, routes }
+
+  return appFiles
+}
+
 export async function createNewAppFiles(
   uploadFile: UploadFile,
   version: string,
@@ -49,13 +57,13 @@ export function getFilesForBuilderHub(appFiles: AppFiles) {
   const { files } = appFiles
 
   const manifestFile: File = {
-    path: 'manifest.json',
     content: JSON.stringify(appFiles.manifest),
+    path: 'manifest.json',
   }
 
   const routesFile: File = {
-    path: `store/routes.json`,
     content: getRouteJSON(appFiles.routes),
+    path: `store/routes.json`,
   }
 
   files.push(manifestFile)
@@ -64,7 +72,7 @@ export function getFilesForBuilderHub(appFiles: AppFiles) {
   return files
 }
 
-type ExtractUpdate = {
+interface ExtractUpdate {
   uploadFile: UploadFile
   path: string
   mainPath: string
@@ -85,7 +93,7 @@ export async function extractFilesAndUpdate({
   return appFiles
 }
 
-type ExtractRemove = {
+interface ExtractRemove {
   pageToRemove: string
   path: string
   mainPath: string
@@ -113,6 +121,7 @@ async function extractFiles(path: string, mainPath: string) {
   let manifest = makeEmptyManifest()
   let routes = makeEmptyRoutes()
 
+  // tslint:disable-next-line:forin
   for (const i in content) {
     const fullPath = `${path}/${content[i]}`
 
@@ -141,8 +150,8 @@ async function extractFiles(path: string, mainPath: string) {
         // eslint-disable-next-line no-await-in-loop
         const fileContent = await readJSON(fullPath)
         const file: File = {
-          path: filePath,
           content: JSON.stringify(fileContent),
+          path: filePath,
         }
 
         files.push(file)
