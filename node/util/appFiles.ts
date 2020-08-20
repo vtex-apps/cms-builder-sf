@@ -42,8 +42,8 @@ export async function createNewAppFiles(
   account: string
 ) {
   const pageFile: File = {
-    path: `store/blocks/${uploadFile.page}.json`,
     content: uploadFile.file,
+    path: `store/blocks/${uploadFile.page}.json`,
   }
 
   const manifest = await makeDefaultManifest(STORE_STATE, version, account)
@@ -57,13 +57,13 @@ export function getFilesForBuilderHub(appFiles: AppFiles) {
   const { files } = appFiles
 
   const manifestFile: File = {
-    path: 'manifest.json',
     content: JSON.stringify(appFiles.manifest),
+    path: 'manifest.json',
   }
 
   const routesFile: File = {
-    path: `store/routes.json`,
     content: getRouteJSON(appFiles.routes),
+    path: `store/routes.json`,
   }
 
   files.push(manifestFile)
@@ -150,8 +150,8 @@ async function extractFiles(path: string, mainPath: string) {
         // eslint-disable-next-line no-await-in-loop
         const fileContent = await readJSON(fullPath)
         const file: File = {
-          path: filePath,
           content: JSON.stringify(fileContent),
+          path: filePath,
         }
 
         files.push(file)
@@ -182,8 +182,8 @@ function updateAppFiles(
 
 function addPage(appFiles: AppFiles, uploadFile: UploadFile) {
   const newPageFile: File = {
-    path: `store/blocks/${uploadFile.page}.json`,
     content: uploadFile.file,
+    path: `store/blocks/${uploadFile.page}.json`,
   }
 
   appFiles.files.push(newPageFile)
