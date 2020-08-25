@@ -1,15 +1,15 @@
-import { json } from 'co-body'
-import streamToPromise from 'stream-to-promise'
 import { parseAppId } from '@vtex/api'
+import { json } from 'co-body'
 import { ensureDir } from 'fs-extra'
+import streamToPromise from 'stream-to-promise'
 
-import { STORE_STATE } from '../util/constants'
 import { returnResponseError } from '../errors/responseError'
 import {
   createNewAppFiles,
   extractFilesAndUpdate,
   getFilesForBuilderHub,
 } from '../util/appFiles'
+import { STORE_STATE } from '../util/constants'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
@@ -24,6 +24,7 @@ export async function publishStoreFromPage(
   const body = await json(ctx.req)
 
   const uploadFile: UploadFile = {
+    dependencies: body.dependencies,
     file: JSON.stringify(body.blocks),
     page: body.meta.page,
     slug: body.meta.slug,
@@ -34,15 +35,16 @@ export async function publishStoreFromPage(
     !uploadFile.file ||
     !uploadFile.page ||
     !uploadFile.slug ||
-    !uploadFile.title
+    !uploadFile.title ||
+    !uploadFile.dependencies
   ) {
     logger.warn('Missing a parameter for the uploadFile')
 
     return returnResponseError({
-      message:
-        'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug',
       code: 'BUILD_FAILED',
       ctx,
+      message:
+        'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug',
       next,
     })
   }
@@ -87,9 +89,9 @@ export async function publishStoreFromPage(
     const sourceCodePath = `${filePath}/src`
 
     appFiles = await extractFilesAndUpdate({
-      uploadFile,
-      path: sourceCodePath,
       mainPath: sourceCodePath,
+      path: sourceCodePath,
+      uploadFile,
       version,
     })
   }

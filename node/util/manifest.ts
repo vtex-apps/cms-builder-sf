@@ -1,6 +1,7 @@
 import { readJson } from 'fs-extra'
 
 import InvalidManifest from '../errors/invalidManifest'
+import { UploadFile } from './uploadFile'
 
 export interface Manifest {
   name: string
@@ -35,48 +36,6 @@ export function makeEmptyManifest() {
 export function defaultDependencies() {
   const dependencies: { [key: string]: string } = {
     'vtex.store': '2.x',
-    'vtex.store-header': '2.x',
-    // tslint:disable-next-line:object-literal-sort-keys
-    'vtex.product-summary': '2.x',
-    'vtex.store-footer': '2.x',
-    'vtex.store-components': '3.x',
-    'vtex.styleguide': '9.x',
-    'vtex.slider': '0.x',
-    'vtex.carousel': '2.x',
-    'vtex.shelf': '1.x',
-    'vtex.menu': '2.x',
-    'vtex.minicart': '2.x',
-    'vtex.product-details': '1.x',
-    'vtex.product-kit': '1.x',
-    'vtex.search-result': '3.x',
-    'vtex.login': '2.x',
-    'vtex.my-account': '1.x',
-    'vtex.flex-layout': '0.x',
-    'vtex.rich-text': '0.x',
-    'vtex.store-drawer': '0.x',
-    'vtex.locale-switcher': '0.x',
-    'vtex.product-quantity': '1.x',
-    'vtex.product-identifier': '0.x',
-    'vtex.breadcrumb': '1.x',
-    'vtex.sticky-layout': '0.x',
-    'vtex.product-customizer': '2.x',
-    'vtex.stack-layout': '0.x',
-    'vtex.product-specification-badges': '0.x',
-    'vtex.product-review-interfaces': '1.x',
-    'vtex.reviews-and-ratings': '1.x',
-    'vtex.telemarketing': '2.x',
-    'vtex.order-placed': '1.x',
-    'vtex.checkout-summary': '0.x',
-    'vtex.product-list': '0.x',
-    'vtex.add-to-cart-button': '0.x',
-    'vtex.product-bookmark-interfaces': '1.x',
-    'vtex.slider-layout': '0.x',
-    'vtex.store-image': '0.x',
-    'vtex.store-icons': '0.x',
-    'vtex.modal-layout': '0.x',
-    'vtex.store-link': '0.x',
-    'vtex.product-gifts': '0.x',
-    'vtex.product-price': '1.x',
   }
 
   return dependencies
@@ -154,4 +113,32 @@ export async function makeDefaultManifest(
   validateManifest(manifest)
 
   return manifest
+}
+
+export function updateManifest(
+  manifest: Manifest,
+  uploadFile: UploadFile,
+  version: string
+) {
+  manifest.version = version
+  manifest.dependencies = updateDependencies(manifest.dependencies, uploadFile)
+
+  return manifest
+}
+
+function updateDependencies(
+  dependencies: { [key: string]: string },
+  uploadFile: UploadFile
+) {
+  // tslint:disable-next-line:forin
+  for (const element of uploadFile.dependencies) {
+    const [depAndVar] = element.split(':')
+    const [dep] = depAndVar.split('@')
+    // eslint-disable-next-line prefer-destructuring
+    const ver = depAndVar.split('@')[1]
+
+    dependencies[dep] = ver
+  }
+
+  return dependencies
 }

@@ -3,4 +3,5 @@ export interface UploadFile {
   file: string
   slug: string
   page: string
+  dependencies: [string]
 }
