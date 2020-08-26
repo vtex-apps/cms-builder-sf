@@ -17,7 +17,7 @@ export async function checkPublishedApp(
   try {
     await ctx.clients.registry.getAppManifest(name, version)
   } catch (err) {
-    logger.warn(`Could not find ${name}`)
+    logger.error(`Could not find ${name} - ${err}`)
     await returnResponseError({
       message: 'Error in build - could not find app',
       code: 'BUILD_FAILED',
@@ -33,7 +33,7 @@ export async function checkPublishedApp(
   try {
     installResponse = await ctx.clients.billings.installApp(appID, true, false)
   } catch (err) {
-    logger.warn(`Could not install ${name}`)
+    logger.error(`Could not install ${name} - ${err}`)
     await returnResponseError({
       message: JSON.stringify(installResponse),
       code: 'INSTALLATION_ERROR',
