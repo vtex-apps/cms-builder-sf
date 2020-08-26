@@ -2,6 +2,7 @@ import { readJson } from 'fs-extra'
 
 import InvalidManifest from '../errors/invalidManifest'
 import { UploadFile } from './uploadFile'
+import InvalidDependency from '../errors/invalidDependency'
 
 export interface Manifest {
   name: string
@@ -130,14 +131,17 @@ function updateDependencies(
   dependencies: { [key: string]: string },
   uploadFile: UploadFile
 ) {
-  // tslint:disable-next-line:forin
   for (const element of uploadFile.dependencies) {
     const [depAndVar] = element.split(':')
-    const [dep] = depAndVar.split('@')
-    // eslint-disable-next-line prefer-destructuring
-    const ver = depAndVar.split('@')[1]
+    const [dependency, version] = depAndVar.split('@')
 
-    dependencies[dep] = ver
+    if (!version) {
+      throw new InvalidDependency(
+        'The dependencies must be in the format: dependency.name@version:other.information'
+      )
+    }
+
+    dependencies[dependency] = version
   }
 
   return dependencies
