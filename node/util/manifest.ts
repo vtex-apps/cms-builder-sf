@@ -1,8 +1,8 @@
 import { readJson } from 'fs-extra'
 
+import InvalidDependency from '../errors/invalidDependency'
 import InvalidManifest from '../errors/invalidManifest'
 import { UploadFile } from './uploadFile'
-import InvalidDependency from '../errors/invalidDependency'
 
 export interface Manifest {
   name: string
@@ -24,11 +24,11 @@ export function makeEmptyManifest() {
   const dependencies = defaultDependencies()
   const builders = { store: '0.x' }
   const manifest: Manifest = {
+    builders,
+    dependencies,
     name: '',
     vendor: '',
     version: '',
-    builders,
-    dependencies,
   }
 
   return manifest
@@ -49,31 +49,31 @@ export function validateManifest(manifest: Manifest): void {
 
   if (manifest.name === undefined) {
     throw new InvalidManifest(
-      "Field 'name' should be set in manifest.json file."
+      'Field "name" should be set in manifest.json file.'
     )
   }
 
   if (manifest.version === undefined) {
     throw new InvalidManifest(
-      "Field 'version' should be set in manifest.json file."
+      'Field "version" should be set in manifest.json file.'
     )
   }
 
   if (manifest.vendor === undefined) {
     throw new InvalidManifest(
-      "Field 'vendor' should be set in manifest.json file."
+      'Field "vendor" should be set in manifest.json file.'
     )
   }
 
   if (!nameRegex.test(manifest.name)) {
     throw new InvalidManifest(
-      "Field 'name' may contain only letters, numbers, underscores and hyphens."
+      'Field "name" may contain only letters, numbers, underscores and hyphens.'
     )
   }
 
   if (!vendorRegex.test(manifest.vendor)) {
     throw new InvalidManifest(
-      "Field 'vendor' may contain only letters, numbers, underscores and hyphens."
+      'Field "vendor" may contain only letters, numbers, underscores and hyphens.'
     )
   }
 
@@ -94,7 +94,7 @@ export async function parseManifest(codePath: string): Promise<Manifest> {
   } catch (error) {
     console.error(error)
 
-    throw new InvalidManifest("manifest.json doesn't exist or is malformed.")
+    throw new InvalidManifest('manifest.json does not exist or is malformed.')
   }
 
   validateManifest(manifest)
