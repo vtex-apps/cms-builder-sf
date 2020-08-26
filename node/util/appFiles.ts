@@ -7,6 +7,7 @@ import {
   makeEmptyManifest,
   Manifest,
   parseManifest,
+  updateManifest,
   validateManifest,
 } from './manifest'
 import {
@@ -46,9 +47,11 @@ export async function createNewAppFiles(
     path: `store/blocks/${uploadFile.page}.json`,
   }
 
-  const manifest = await makeDefaultManifest(STORE_STATE, version, account)
+  let manifest = await makeDefaultManifest(STORE_STATE, version, account)
   const routes = makeRoutes(uploadFile.page, uploadFile.slug)
   const appFiles: AppFiles = { files: [pageFile], manifest, routes }
+
+  manifest = updateManifest(manifest, uploadFile, version)
 
   return appFiles
 }
@@ -175,7 +178,7 @@ function updateAppFiles(
     appFiles = addPage(appFiles, uploadFile)
   }
 
-  appFiles.manifest.version = version
+  appFiles.manifest = updateManifest(appFiles.manifest, uploadFile, version)
 
   return appFiles
 }

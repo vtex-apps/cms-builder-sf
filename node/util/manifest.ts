@@ -1,6 +1,8 @@
 import { readJson } from 'fs-extra'
 
+import InvalidDependency from '../errors/invalidDependency'
 import InvalidManifest from '../errors/invalidManifest'
+import { UploadFile } from './uploadFile'
 
 export interface Manifest {
   name: string
@@ -22,11 +24,11 @@ export function makeEmptyManifest() {
   const dependencies = defaultDependencies()
   const builders = { store: '0.x' }
   const manifest: Manifest = {
+    builders,
+    dependencies,
     name: '',
     vendor: '',
     version: '',
-    builders,
-    dependencies,
   }
 
   return manifest
@@ -35,48 +37,6 @@ export function makeEmptyManifest() {
 export function defaultDependencies() {
   const dependencies: { [key: string]: string } = {
     'vtex.store': '2.x',
-    'vtex.store-header': '2.x',
-    // tslint:disable-next-line:object-literal-sort-keys
-    'vtex.product-summary': '2.x',
-    'vtex.store-footer': '2.x',
-    'vtex.store-components': '3.x',
-    'vtex.styleguide': '9.x',
-    'vtex.slider': '0.x',
-    'vtex.carousel': '2.x',
-    'vtex.shelf': '1.x',
-    'vtex.menu': '2.x',
-    'vtex.minicart': '2.x',
-    'vtex.product-details': '1.x',
-    'vtex.product-kit': '1.x',
-    'vtex.search-result': '3.x',
-    'vtex.login': '2.x',
-    'vtex.my-account': '1.x',
-    'vtex.flex-layout': '0.x',
-    'vtex.rich-text': '0.x',
-    'vtex.store-drawer': '0.x',
-    'vtex.locale-switcher': '0.x',
-    'vtex.product-quantity': '1.x',
-    'vtex.product-identifier': '0.x',
-    'vtex.breadcrumb': '1.x',
-    'vtex.sticky-layout': '0.x',
-    'vtex.product-customizer': '2.x',
-    'vtex.stack-layout': '0.x',
-    'vtex.product-specification-badges': '0.x',
-    'vtex.product-review-interfaces': '1.x',
-    'vtex.reviews-and-ratings': '1.x',
-    'vtex.telemarketing': '2.x',
-    'vtex.order-placed': '1.x',
-    'vtex.checkout-summary': '0.x',
-    'vtex.product-list': '0.x',
-    'vtex.add-to-cart-button': '0.x',
-    'vtex.product-bookmark-interfaces': '1.x',
-    'vtex.slider-layout': '0.x',
-    'vtex.store-image': '0.x',
-    'vtex.store-icons': '0.x',
-    'vtex.modal-layout': '0.x',
-    'vtex.store-link': '0.x',
-    'vtex.product-gifts': '0.x',
-    'vtex.product-price': '1.x',
   }
 
   return dependencies
@@ -89,31 +49,31 @@ export function validateManifest(manifest: Manifest): void {
 
   if (manifest.name === undefined) {
     throw new InvalidManifest(
-      "Field 'name' should be set in manifest.json file."
+      'Field "name" should be set in manifest.json file.'
     )
   }
 
   if (manifest.version === undefined) {
     throw new InvalidManifest(
-      "Field 'version' should be set in manifest.json file."
+      'Field "version" should be set in manifest.json file.'
     )
   }
 
   if (manifest.vendor === undefined) {
     throw new InvalidManifest(
-      "Field 'vendor' should be set in manifest.json file."
+      'Field "vendor" should be set in manifest.json file.'
     )
   }
 
   if (!nameRegex.test(manifest.name)) {
     throw new InvalidManifest(
-      "Field 'name' may contain only letters, numbers, underscores and hyphens."
+      'Field "name" may contain only letters, numbers, underscores and hyphens.'
     )
   }
 
   if (!vendorRegex.test(manifest.vendor)) {
     throw new InvalidManifest(
-      "Field 'vendor' may contain only letters, numbers, underscores and hyphens."
+      'Field "vendor" may contain only letters, numbers, underscores and hyphens.'
     )
   }
 
@@ -134,7 +94,7 @@ export async function parseManifest(codePath: string): Promise<Manifest> {
   } catch (error) {
     console.error(error)
 
-    throw new InvalidManifest("manifest.json doesn't exist or is malformed.")
+    throw new InvalidManifest('manifest.json does not exist or is malformed.')
   }
 
   validateManifest(manifest)
@@ -154,4 +114,35 @@ export async function makeDefaultManifest(
   validateManifest(manifest)
 
   return manifest
+}
+
+export function updateManifest(
+  manifest: Manifest,
+  uploadFile: UploadFile,
+  version: string
+) {
+  manifest.version = version
+  manifest.dependencies = updateDependencies(manifest.dependencies, uploadFile)
+
+  return manifest
+}
+
+function updateDependencies(
+  dependencies: { [key: string]: string },
+  uploadFile: UploadFile
+) {
+  for (const element of uploadFile.dependencies) {
+    const [depAndVar] = element.split(':')
+    const [dependency, version] = depAndVar.split('@')
+
+    if (!version) {
+      throw new InvalidDependency(
+        'The dependencies must be in the format: dependency.name@version:other.information'
+      )
+    }
+
+    dependencies[dependency] = version
+  }
+
+  return dependencies
 }
