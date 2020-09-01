@@ -11,13 +11,13 @@ export async function checkPublishedApp(
   const { logger } = ctx.vtex
   const body = await json(ctx.req)
 
-  const appID = body.buildId
-  const { name, version } = parseAppId(appID)
+  const appId = body.buildId
+  const { name, version } = parseAppId(appId)
 
   try {
     await ctx.clients.registry.getAppManifest(name, version)
   } catch (err) {
-    logger.error(`Could not find ${name} - ${err}`)
+    logger.error(`Could not find ${name}:${version} - ${err}`)
     await returnResponseError({
       message: 'Error in build - could not find app',
       code: 'BUILD_FAILED',
@@ -31,7 +31,7 @@ export async function checkPublishedApp(
   let installResponse: InstallResponse = { code: '' }
 
   try {
-    installResponse = await ctx.clients.billings.installApp(appID, true, false)
+    installResponse = await ctx.clients.billings.installApp(appId, true, false)
   } catch (err) {
     logger.error(`Could not install ${name} - ${err}`)
     await returnResponseError({

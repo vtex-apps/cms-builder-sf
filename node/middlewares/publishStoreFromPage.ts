@@ -13,7 +13,7 @@ import { STORE_STATE } from '../util/constants'
 import { UploadFile } from '../util/uploadFile'
 import { bumpPatchVersion } from '../util/versionControl'
 
-const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
+const jsonResponse = (newAppId: string) => `{"buildId": "${newAppId}"}`
 
 export async function publishStoreFromPage(
   ctx: Context,
@@ -50,7 +50,7 @@ export async function publishStoreFromPage(
   }
 
   const appName = `${ctx.vtex.account}.${STORE_STATE}`
-  let appID = `${appName}@0.0.0`
+  let appId = `${appName}@0.0.0`
 
   try {
     const versions = await ctx.clients.registry.listVersionsByApp(
@@ -59,24 +59,25 @@ export async function publishStoreFromPage(
 
     const index = versions.data.length - 1
 
-    appID = versions.data[index].versionIdentifier
+    appId = versions.data[index].versionIdentifier
   } catch (err) {
     logger.warn(`Could not find previous versions of ${STORE_STATE}`)
     newApp = true
   }
 
-  const newAppID = bumpPatchVersion(appID)
-  const { version } = parseAppId(newAppID)
+  const newAppId = bumpPatchVersion(appId)
+  const { version } = parseAppId(newAppId)
 
   let appFiles
 
-  if (newApp === true) {
+  if (newApp) {
     appFiles = await createNewAppFiles(uploadFile, version, ctx.vtex.account)
   } else {
     const filePath = 'appFilesFromRegistry'
 
     await ensureDir(filePath)
-    const oldVersion = parseAppId(appID).version
+    const { version: oldVersion } = parseAppId(appId)
+
     const stream = await ctx.clients.registry.unpackAppBundle(
       appName,
       oldVersion,
@@ -98,14 +99,14 @@ export async function publishStoreFromPage(
 
   const files = getFilesForBuilderHub(appFiles)
 
-  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  const publishedApp = await ctx.clients.builder.publishApp(newAppId, files)
 
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(
-    `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
+    `Finished building ${newAppId}. Please check to make sure the publishing was successful.`
   )
 
-  const response = jsonResponse(newAppID)
+  const response = jsonResponse(newAppId)
 
   ctx.status = 200
   ctx.body = response
