@@ -1,37 +1,52 @@
-import { VBase } from '@vtex/api'
 import * as crypto from 'crypto'
+
+import { VBase } from '@vtex/api'
+
 import { parseEvent, saveBuildInfo, validEvent } from '.'
 import errorHandler from './errorHandler'
 
 const buildCodeToGithubStatus: IStringToString = {
-  'fail': 'failure',
-  'success': 'success',
+  fail: 'failure',
+  success: 'success',
 }
 
-function validBuildCode (buildCode: string): boolean {
-  return (buildCode in buildCodeToGithubStatus)
+function validBuildCode(buildCode: string): boolean {
+  return buildCode in buildCodeToGithubStatus
 }
 
-export async function savePublishInfo (ctx: ColossusEventContext,vbase: VBase, event: ColossusEvent): Promise<void> {
-  const appId = event.appId
-  const app = appId.split('@')[0]
-  const appVersion = appId.split('@')[1]
+export async function savePublishInfo(
+  ctx: ColossusEventContext,
+  vbase: VBase,
+  event: ColossusEvent
+): Promise<void> {
+  const { appId } = event
+  const [app, appVersion] = appId.split('@')
 
   const publishExistencePath = `publish/${app}/${appVersion}/${event.buildId}`
-  vbase.saveJSON('logs', publishExistencePath, {})
+
+  vbase
+    .saveJSON('logs', publishExistencePath, {})
     .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
 
   const appExistencePath = `app/${app}`
-  vbase.saveJSON('logs', appExistencePath, {})
+
+  vbase
+    .saveJSON('logs', appExistencePath, {})
     .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
 }
 
-async function saveBuildStatusAsLog (ctx: ColossusEventContext, vbase: VBase, event: ColossusEvent): Promise<void> {
+async function saveBuildStatusAsLog(
+  ctx: ColossusEventContext,
+  vbase: VBase,
+  event: ColossusEvent
+): Promise<void> {
   let message = `build.status: ${event.buildCode}`
+
   if (event.message) {
     message += ` - ${event.message}`
   }
-  const level = (event.buildCode === 'success') ? 'info' : 'error'
+
+  const level = event.buildCode === 'success' ? 'info' : 'error'
 
   const log = {
     body: {
@@ -42,32 +57,49 @@ async function saveBuildStatusAsLog (ctx: ColossusEventContext, vbase: VBase, ev
     key: event.key,
     sender: event.sender,
   }
+
   const eventId = crypto.randomBytes(8).toString('hex')
   const logPath = `build/logs/${event.buildId}/${eventId}`
-  vbase.saveJSON('logs', logPath, log)
+
+  vbase
+    .saveJSON('logs', logPath, log)
     .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
 }
 
-async function saveBuildStatus (ctx: ColossusEventContext, vbase: VBase, buildCode: string, buildId: string): Promise<void> {
+async function saveBuildStatus(
+  ctx: ColossusEventContext,
+  vbase: VBase,
+  buildCode: string,
+  buildId: string
+): Promise<void> {
   const path = `build/status/${buildId}`
-  vbase.saveJSON('logs', path, {buildCode})
+
+  vbase
+    .saveJSON('logs', path, { buildCode })
     .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
 }
 
-export default async function buildStatus (ctx: ColossusEventContext): Promise<void> {
+export default async function buildStatus(
+  ctx: ColossusEventContext
+): Promise<void> {
   const event = parseEvent(ctx)
+
   if (validEvent(event) && validBuildCode(event.buildCode)) {
     const vbase = new VBase(ctx)
 
-    saveBuildStatus(ctx, vbase, event.buildCode, event.buildId)
-      .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
-    saveBuildStatusAsLog(ctx, vbase, event)
-      .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
-    saveBuildInfo(ctx, vbase, event)
-      .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
+    saveBuildStatus(ctx, vbase, event.buildCode, event.buildId).catch(error =>
+      errorHandler(error, true, ctx.clients.logger, ctx)
+    )
+    saveBuildStatusAsLog(ctx, vbase, event).catch(error =>
+      errorHandler(error, true, ctx.clients.logger, ctx)
+    )
+    saveBuildInfo(ctx, vbase, event).catch(error =>
+      errorHandler(error, true, ctx.clients.logger, ctx)
+    )
     if (event.routeId === 'publish') {
-      savePublishInfo(ctx, vbase, event)
-        .catch(error => errorHandler(error, true, ctx.clients.logger, ctx))
+      savePublishInfo(ctx, vbase, event).catch(error =>
+        errorHandler(error, true, ctx.clients.logger, ctx)
+      )
     }
   }
 }

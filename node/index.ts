@@ -11,12 +11,14 @@ import {
 } from '@vtex/api'
 
 import { Clients } from './clients'
+import buildStatus from './events/buildStatus'
 import errorHandler from './events/errorHandler'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { emptyApp } from './middlewares/emptyApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 import { unpublishPage } from './middlewares/unpublishPage'
+import { build } from './events/build'
 
 const TIMEOUT_MS = 10000
 
@@ -28,12 +30,13 @@ metrics.trackCache('status', memoryCache)
 
 let lastLogger: Logger
 
-function eventHandler (f: (ctx: ColossusEventContext) => Promise<void>) {
+function eventHandler(f: (ctx: ColossusEventContext) => Promise<void>) {
   return async (ctx: ColossusEventContext): Promise<void> => {
     const logger = new Logger(ctx)
+
     lastLogger = logger
 
-    ctx.clients = {logger}
+    ctx.clients = { logger }
 
     try {
       await f(ctx)
@@ -74,7 +77,7 @@ declare global {
 export default new Service<Clients, State, ParamsContext>({
   clients,
   events: {
-    buildStatusBuilderHub: eventHandler(buildStatus),
+    buildStatusBuilderHub: build,
   },
   routes: {
     emptyApp: method({
@@ -93,5 +96,5 @@ export default new Service<Clients, State, ParamsContext>({
       DEFAULT: methodNotAllowed,
       POST: [unpublishPage],
     }),
-  }
+  },
 })
