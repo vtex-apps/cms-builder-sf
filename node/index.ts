@@ -1,7 +1,7 @@
 import {
   Cached,
   ClientsConfig,
-  Logger,
+  // Logger,
   LRUCache,
   method,
   ParamsContext,
@@ -11,14 +11,13 @@ import {
 } from '@vtex/api'
 
 import { Clients } from './clients'
-import buildStatus from './events/buildStatus'
-import errorHandler from './events/errorHandler'
+import { build } from './events/build'
+// import errorHandler from './events/errorHandler'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { emptyApp } from './middlewares/emptyApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 import { unpublishPage } from './middlewares/unpublishPage'
-import { build } from './events/build'
 
 const TIMEOUT_MS = 10000
 
@@ -28,23 +27,23 @@ const memoryCache = new LRUCache<string, Cached>({ max: 5000 })
 
 metrics.trackCache('status', memoryCache)
 
-let lastLogger: Logger
+// let lastLogger: Logger
 
-function eventHandler(f: (ctx: ColossusEventContext) => Promise<void>) {
-  return async (ctx: ColossusEventContext): Promise<void> => {
-    const logger = new Logger(ctx)
+// function eventHandler(f: (ctx: ColossusEventContext) => Promise<void>) {
+//   return async (ctx: ColossusEventContext): Promise<void> => {
+//     const logger = new Logger(ctx)
 
-    lastLogger = logger
+//     lastLogger = logger
 
-    ctx.clients = { logger }
+//     ctx.clients = { logger }
 
-    try {
-      await f(ctx)
-    } catch (error) {
-      errorHandler(ctx, true, logger, error)
-    }
-  }
-}
+//     try {
+//       await f(ctx)
+//     } catch (error) {
+//       errorHandler(ctx, true, logger, error)
+//     }
+//   }
+// }
 
 // This is the configuration for clients available in `ctx.clients`.
 const clients: ClientsConfig<Clients> = {
