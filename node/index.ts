@@ -12,7 +12,6 @@ import {
 
 import { Clients } from './clients'
 import { build } from './events/build'
-// import errorHandler from './events/errorHandler'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { emptyApp } from './middlewares/emptyApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'

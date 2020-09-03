@@ -98,9 +98,16 @@ export async function publishStoreFromPage(
 
   const files = getFilesForBuilderHub(appFiles)
 
-  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  const publishedApp = await ctx.clients.builder.publishApp(
+    newAppID,
+    files,
+    { sticky: true },
+    { buildHash: '123a' } as any
+  )
 
-  logger.info(`Build result message: ${publishedApp.message}`)
+  logger.info(
+    `Build result message: ${publishedApp.message} and ${publishedApp}`
+  )
   logger.info(
     `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
   )

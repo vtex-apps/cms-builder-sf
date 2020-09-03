@@ -30,7 +30,12 @@ export async function emptyApp(ctx: Context, next: () => Promise<any>) {
   const appFiles = await createEmptyAppFiles(version, ctx.vtex.account)
   const files = getFilesForBuilderHub(appFiles)
 
-  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  const publishedApp = await ctx.clients.builder.publishApp(
+    newAppID,
+    files,
+    { sticky: true },
+    { buildHash: '123a' } as any
+  )
 
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(
