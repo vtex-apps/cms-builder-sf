@@ -39,6 +39,9 @@
       "name": "install-apps"
     },
     {
+      "name": "vbase-read-write"
+    },
+    {
       "name": "read-public-registry-assets"
     },
     {

@@ -1,7 +1,17 @@
-import { EventContext } from '@vtex/api'
+import { createHash } from 'crypto'
+
+import { EventContext, VBase } from '@vtex/api'
 
 import { Clients } from '../clients'
-import { STORE_STATE } from './../util/constants'
+import { STORE_STATE } from '../util/constants'
+import { getBuildStatus, saveBuildStatus } from '../util/vbase'
+
+export interface BuildStatus {
+  appId: string
+  buildCode: string
+  buildId: string
+  message: string
+}
 
 export async function build(
   ctx: EventContext<Clients, State>,
@@ -13,12 +23,40 @@ export async function build(
     return
   }
 
+  const { vbase } = ctx.clients
+
+  const previousStatus = (await getBuildStatus(
+    vbase,
+    ctx.vtex.account,
+    ctx.vtex.workspace
+  )) as BuildStatus
+
+  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
+  const buildHash = createHash('md5')
+    .update(buildId)
+    .digest('hex')
+
+  if (buildHash !== previousStatus.buildId) {
+    return
+  }
+
   if (event.buildCode === 'success') {
-    buildSuccess()
+    buildSuccess({
+      account: ctx.vtex.account,
+      previousStatus,
+      vbase,
+      workspace: ctx.vtex.workspace,
+    })
   }
 
   if (event.buildCode === 'fail') {
-    buildFail(event)
+    buildFail({
+      account: ctx.vtex.account,
+      event,
+      previousStatus,
+      vbase,
+      workspace: ctx.vtex.workspace,
+    })
   }
 
   next()
@@ -45,11 +83,40 @@ function parseEvent(ctx: EventContext<Clients, State>) {
   } as ColossusEvent
 }
 
-function buildSuccess() {
-  console.log('build was a success')
+interface BuildSuccessArgs {
+  previousStatus: BuildStatus
+  vbase: VBase
+  account: string
+  workspace: string
 }
 
-function buildFail(event: ColossusEvent) {
-  console.log('build failed')
-  console.log('Error message', event.message)
+function buildSuccess({
+  previousStatus,
+  vbase,
+  account,
+  workspace,
+}: BuildSuccessArgs) {
+  previousStatus.buildCode = 'SUCCESS'
+  saveBuildStatus({ vbase, buildStatus: previousStatus, account, workspace })
+}
+
+interface BuildFailArgs {
+  event: ColossusEvent
+  previousStatus: BuildStatus
+  vbase: VBase
+  account: string
+  workspace: string
+}
+
+function buildFail({
+  event,
+  previousStatus,
+  vbase,
+  account,
+  workspace,
+}: BuildFailArgs) {
+  previousStatus.buildCode = 'BUILD_FAILED'
+  previousStatus.message = event.message
+
+  saveBuildStatus({ vbase, buildStatus: previousStatus, account, workspace })
 }
