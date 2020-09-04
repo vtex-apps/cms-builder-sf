@@ -41,7 +41,7 @@ export async function checkPublishedApp(
   }
 
   if (buildStatus.buildCode === 'WAITING_FOR_BUILD') {
-    ctx.status = 201
+    ctx.status = 200
     ctx.body = `{"message": "${buildStatus.message}", "code": "${buildStatus.buildCode}"}`
     await next()
 
@@ -73,7 +73,7 @@ export async function checkPublishedApp(
     return
   }
 
-  ctx.status = 201
+  ctx.status = 200
   ctx.body = `{"message": "success", "code": "SUCCESS"}`
 
   await next()
