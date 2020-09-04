@@ -1,7 +1,11 @@
+import { createHash } from 'crypto'
+
 import { parseAppId } from '@vtex/api'
 
+import { BuildStatus } from '../events/buildStatus'
 import { createEmptyAppFiles, getFilesForBuilderHub } from '../util/appFiles'
 import { STORE_STATE } from '../util/constants'
+import { saveBuildStatus } from '../util/vbase'
 import { bumpPatchVersion } from '../util/versionControl'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
@@ -27,10 +31,35 @@ export async function emptyApp(ctx: Context, next: () => Promise<any>) {
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
+  const { vbase } = ctx.clients
+  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
+  const buildHash = createHash('md5')
+    .update(buildId)
+    .digest('hex')
+
+  const buildStatus: BuildStatus = {
+    appId: newAppID,
+    buildCode: 'WAITING_FOR_BUILD',
+    buildId: buildHash,
+    message: ' ',
+  }
+
+  saveBuildStatus({
+    account: ctx.vtex.account,
+    buildStatus,
+    vbase,
+    workspace: ctx.vtex.workspace,
+  })
+
   const appFiles = await createEmptyAppFiles(version, ctx.vtex.account)
   const files = getFilesForBuilderHub(appFiles)
 
-  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  const publishedApp = await ctx.clients.builder.publishApp(
+    newAppID,
+    files,
+    { sticky: true },
+    { buildHash } as any
+  )
 
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(

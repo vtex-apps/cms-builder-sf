@@ -24,6 +24,10 @@
   "typeAcquisition": {
     "enable": false
   },
-  "include": ["global.ts", "./**/*"],
+  "include": [
+    "global.ts",
+    "./**/*",
+    "./typings.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
