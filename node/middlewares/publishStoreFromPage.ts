@@ -126,7 +126,7 @@ export async function publishStoreFromPage(
     newAppID,
     files,
     { sticky: true },
-    { buildHash: '123a' } as any
+    { buildHash } as any
   )
 
   logger.info(

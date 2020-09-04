@@ -1,5 +1,3 @@
-import { createHash } from 'crypto'
-
 import { EventContext, VBase } from '@vtex/api'
 
 import { Clients } from '../clients'
@@ -31,12 +29,7 @@ export async function buildStatus(
     ctx.vtex.workspace
   )) as BuildStatus
 
-  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
-  const buildHash = createHash('md5')
-    .update(buildId)
-    .digest('hex')
-
-  if (buildHash !== previousStatus.buildId) {
+  if (event.buildId !== previousStatus.buildId) {
     return
   }
 

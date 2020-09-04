@@ -1,7 +1,6 @@
 import {
   Cached,
   ClientsConfig,
-  // Logger,
   LRUCache,
   method,
   ParamsContext,
@@ -25,24 +24,6 @@ const TIMEOUT_MS = 10000
 const memoryCache = new LRUCache<string, Cached>({ max: 5000 })
 
 metrics.trackCache('status', memoryCache)
-
-// let lastLogger: Logger
-
-// function eventHandler(f: (ctx: ColossusEventContext) => Promise<void>) {
-//   return async (ctx: ColossusEventContext): Promise<void> => {
-//     const logger = new Logger(ctx)
-
-//     lastLogger = logger
-
-//     ctx.clients = { logger }
-
-//     try {
-//       await f(ctx)
-//     } catch (error) {
-//       errorHandler(ctx, true, logger, error)
-//     }
-//   }
-// }
 
 // This is the configuration for clients available in `ctx.clients`.
 const clients: ClientsConfig<Clients> = {

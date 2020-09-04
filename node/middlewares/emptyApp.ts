@@ -58,7 +58,7 @@ export async function emptyApp(ctx: Context, next: () => Promise<any>) {
     newAppID,
     files,
     { sticky: true },
-    { buildHash: '123a' } as any
+    { buildHash } as any
   )
 
   logger.info(`Build result message: ${publishedApp.message}`)
