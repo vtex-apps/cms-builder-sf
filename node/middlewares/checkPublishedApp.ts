@@ -40,15 +40,21 @@ export async function checkPublishedApp(
     return
   }
 
-  if (buildStatus.buildCode !== 'SUCCESS') {
+  if (buildStatus.buildCode === 'WAITING_FOR_BUILD') {
+    ctx.status = 201
+    ctx.body = `{"message": "${buildStatus.message}", "code": "${buildStatus.buildCode}"}`
+    await next()
+
+    return
+  }
+
+  if (buildStatus.buildCode === 'BUILD_FAILED') {
     await returnResponseError({
       code: buildStatus.buildCode,
       ctx,
       message: buildStatus.message,
       next,
     })
-
-    return
   }
 
   let installResponse: InstallResponse = { code: '' }
