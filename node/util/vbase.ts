@@ -1,7 +1,7 @@
 import { VBase } from '@vtex/api'
 
 import VBaseError from '../errors/vbaseError'
-import { BuildStatus } from '../events/build'
+import { BuildStatus } from '../events/buildStatus'
 import { VBASE_BUCKET } from './constants'
 
 interface SaveBuildStatus {

@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 
 import { parseAppId } from '@vtex/api'
 
-import { BuildStatus } from '../events/build'
+import { BuildStatus } from '../events/buildStatus'
 import { createEmptyAppFiles, getFilesForBuilderHub } from '../util/appFiles'
 import { STORE_STATE } from '../util/constants'
 import { saveBuildStatus } from '../util/vbase'

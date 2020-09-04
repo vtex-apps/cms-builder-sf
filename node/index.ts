@@ -11,7 +11,7 @@ import {
 } from '@vtex/api'
 
 import { Clients } from './clients'
-import { build } from './events/build'
+import { buildStatus } from './events/buildStatus'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { emptyApp } from './middlewares/emptyApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
@@ -75,7 +75,7 @@ declare global {
 export default new Service<Clients, State, ParamsContext>({
   clients,
   events: {
-    buildStatusBuilderHub: build,
+    buildStatusBuilderHub: buildStatus,
   },
   routes: {
     emptyApp: method({

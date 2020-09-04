@@ -6,7 +6,7 @@ import { ensureDir } from 'fs-extra'
 import streamToPromise from 'stream-to-promise'
 
 import { returnResponseError } from '../errors/responseError'
-import { BuildStatus } from '../events/build'
+import { BuildStatus } from '../events/buildStatus'
 import {
   createNewAppFiles,
   extractFilesAndUpdate,
