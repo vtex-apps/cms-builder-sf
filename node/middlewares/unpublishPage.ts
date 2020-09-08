@@ -1,19 +1,19 @@
 import { createHash } from 'crypto'
 
-import { json } from 'co-body'
-import streamToPromise from 'stream-to-promise'
 import { parseAppId } from '@vtex/api'
+import { json } from 'co-body'
 import { ensureDir } from 'fs-extra'
+import streamToPromise from 'stream-to-promise'
 
-import { STORE_STATE } from '../util/constants'
 import { returnResponseError } from '../errors/responseError'
+import { BuildStatus } from '../events/buildStatus'
 import {
   extractFilesAndRemovePage,
   getFilesForBuilderHub,
 } from '../util/appFiles'
-import { bumpPatchVersion } from '../util/versionControl'
-import { BuildStatus } from '../events/buildStatus'
+import { STORE_STATE } from '../util/constants'
 import { saveBuildStatus } from '../util/vbase'
+import { bumpPatchVersion } from '../util/versionControl'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
 
@@ -86,16 +86,16 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
 
   try {
     appFiles = await extractFilesAndRemovePage({
+      mainPath: sourceCodePath,
       pageToRemove,
       path: sourceCodePath,
-      mainPath: sourceCodePath,
       version,
     })
   } catch (err) {
     return returnResponseError({
-      message: 'Could not find a page to delete',
       code: 'PAGE_NOT_FOUND',
       ctx,
+      message: 'Could not find a page to delete',
       next,
     })
   }
