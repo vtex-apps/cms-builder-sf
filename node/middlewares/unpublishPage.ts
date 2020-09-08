@@ -1,3 +1,5 @@
+import { createHash } from 'crypto'
+
 import { json } from 'co-body'
 import streamToPromise from 'stream-to-promise'
 import { parseAppId } from '@vtex/api'
@@ -10,6 +12,8 @@ import {
   getFilesForBuilderHub,
 } from '../util/appFiles'
 import { bumpPatchVersion } from '../util/versionControl'
+import { BuildStatus } from '../events/buildStatus'
+import { saveBuildStatus } from '../util/vbase'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
 
@@ -42,6 +46,26 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
 
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
+
+  const { vbase } = ctx.clients
+  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
+  const buildHash = createHash('md5')
+    .update(buildId)
+    .digest('hex')
+
+  const buildStatus: BuildStatus = {
+    appId: newAppID,
+    buildCode: 'WAITING_FOR_BUILD',
+    buildId: buildHash,
+    message: ' ',
+  }
+
+  saveBuildStatus({
+    account: ctx.vtex.account,
+    buildStatus,
+    vbase,
+    workspace: ctx.vtex.workspace,
+  })
 
   const filePath = 'appFilesFromRegistry'
 
@@ -78,7 +102,12 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
 
   const files = getFilesForBuilderHub(appFiles)
 
-  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  const publishedApp = await ctx.clients.builder.publishApp(
+    newAppID,
+    files,
+    { sticky: true },
+    { buildHash } as any
+  )
 
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(
