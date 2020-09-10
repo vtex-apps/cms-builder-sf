@@ -20,6 +20,10 @@
     "emptyApp": {
       "path": "/publishEmptyApp",
       "public": false
+    },
+    "listFiles": {
+      "path": "/listFiles",
+      "public": false
     }
   },
   "events": {
