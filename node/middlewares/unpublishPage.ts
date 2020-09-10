@@ -1,14 +1,18 @@
-import { json } from 'co-body'
-import streamToPromise from 'stream-to-promise'
-import { parseAppId } from '@vtex/api'
-import { ensureDir } from 'fs-extra'
+import { createHash } from 'crypto'
 
-import { STORE_STATE } from '../util/constants'
+import { parseAppId } from '@vtex/api'
+import { json } from 'co-body'
+import { ensureDir } from 'fs-extra'
+import streamToPromise from 'stream-to-promise'
+
 import { returnResponseError } from '../errors/responseError'
+import { BuildStatus } from '../events/buildStatus'
 import {
   extractFilesAndRemovePage,
   getFilesForBuilderHub,
 } from '../util/appFiles'
+import { STORE_STATE } from '../util/constants'
+import { saveBuildStatus } from '../util/vbase'
 import { bumpPatchVersion } from '../util/versionControl'
 
 const jsonResponse = (newAppID: string) => `{"buildId": "${newAppID}"}`
@@ -43,6 +47,26 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
   const newAppID = bumpPatchVersion(appID)
   const { version } = parseAppId(newAppID)
 
+  const { vbase } = ctx.clients
+  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
+  const buildHash = createHash('md5')
+    .update(buildId)
+    .digest('hex')
+
+  const buildStatus: BuildStatus = {
+    appId: newAppID,
+    buildCode: 'WAITING_FOR_BUILD',
+    buildId: buildHash,
+    message: ' ',
+  }
+
+  saveBuildStatus({
+    account: ctx.vtex.account,
+    buildStatus,
+    vbase,
+    workspace: ctx.vtex.workspace,
+  })
+
   const filePath = 'appFilesFromRegistry'
 
   await ensureDir(filePath)
@@ -62,23 +86,28 @@ export async function unpublishPage(ctx: Context, next: () => Promise<any>) {
 
   try {
     appFiles = await extractFilesAndRemovePage({
+      mainPath: sourceCodePath,
       pageToRemove,
       path: sourceCodePath,
-      mainPath: sourceCodePath,
       version,
     })
   } catch (err) {
     return returnResponseError({
-      message: 'Could not find a page to delete',
       code: 'PAGE_NOT_FOUND',
       ctx,
+      message: 'Could not find a page to delete',
       next,
     })
   }
 
   const files = getFilesForBuilderHub(appFiles)
 
-  const publishedApp = await ctx.clients.builder.publishApp(newAppID, files)
+  const publishedApp = await ctx.clients.builder.publishApp(
+    newAppID,
+    files,
+    { sticky: true },
+    { buildHash } as any
+  )
 
   logger.info(`Build result message: ${publishedApp.message}`)
   logger.info(

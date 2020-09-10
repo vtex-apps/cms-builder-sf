@@ -55,6 +55,8 @@ export async function checkPublishedApp(
       message: buildStatus.message,
       next,
     })
+
+    return
   }
 
   let installResponse: InstallResponse = { code: '' }
