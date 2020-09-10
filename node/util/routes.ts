@@ -35,6 +35,8 @@ export function addRoute(routes: Routes, key: string, path: string) {
 
   routes.routes.push(newPageRoute)
 
+  console.info(`[routes]: new page routes ${newPageRoute}`)
+
   return routes
 }
 

@@ -118,7 +118,7 @@ export async function extractFilesAndRemovePage({
 }
 
 // TODO: fix await inside loops
-async function extractFiles(path: string, mainPath: string) {
+export async function extractFiles(path: string, mainPath: string) {
   const content = await readdir(path)
   let files = [] as File[]
   let manifest = makeEmptyManifest()

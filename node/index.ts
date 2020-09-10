@@ -16,6 +16,7 @@ import { emptyApp } from './middlewares/emptyApp'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 import { unpublishPage } from './middlewares/unpublishPage'
+import { listFiles } from './middlewares/listFiles'
 
 const TIMEOUT_MS = 10000
 
@@ -74,6 +75,10 @@ export default new Service<Clients, State, ParamsContext>({
     unpublish: method({
       DEFAULT: methodNotAllowed,
       POST: [unpublishPage],
+    }),
+    listFiles: method({
+      DEFAULT: methodNotAllowed,
+      GET: [listFiles],
     }),
   },
 })
