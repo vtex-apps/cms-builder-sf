@@ -1,5 +1,5 @@
 import { File } from '@vtex/api/lib/clients/infra/Registry'
-import { ensureDir, pathExists, remove, writeJSON } from 'fs-extra'
+import { pathExists, remove, writeJSON, emptyDir } from 'fs-extra'
 
 export async function createBaseFolderWithStore(
   path: string,
@@ -8,7 +8,7 @@ export async function createBaseFolderWithStore(
 ) {
   const newPath = createBaseFolder(path, account, workspace)
 
-  await ensureDir(`${newPath}/store`)
+  await emptyDir(`${newPath}/store`)
 
   return newPath
 }
@@ -24,7 +24,7 @@ export async function createBaseFolder(
 
   const newPath = `${path}/${account}/${workspace}`
 
-  await ensureDir(newPath)
+  await emptyDir(newPath)
 
   return newPath
 }
@@ -63,7 +63,7 @@ export async function extractFiles(body: any, path: string, mainPath: string) {
 async function makeFolder(path: string, name: string) {
   const newPath = `${path}/${name}`
 
-  await ensureDir(newPath)
+  await emptyDir(newPath)
 
   return newPath
 }
