@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 
 import { parseAppId } from '@vtex/api'
 import { json } from 'co-body'
-import { ensureDir } from 'fs-extra'
+import { emptyDir } from 'fs-extra'
 import streamToPromise from 'stream-to-promise'
 
 import { returnResponseError } from '../errors/responseError'
@@ -99,7 +99,7 @@ export async function publishStoreFromPage(
   } else {
     const filePath = 'appFilesFromRegistry'
 
-    await ensureDir(filePath)
+    await emptyDir(filePath)
     const oldVersion = parseAppId(appID).version
     const stream = await ctx.clients.registry.unpackAppBundle(
       appName,

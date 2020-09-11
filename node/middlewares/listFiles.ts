@@ -1,5 +1,5 @@
 import { parseAppId } from '@vtex/api'
-import { ensureDir } from 'fs-extra'
+import { emptyDir } from 'fs-extra'
 import streamToPromise from 'stream-to-promise'
 
 import { STORE_STATE } from '../util/constants'
@@ -36,7 +36,7 @@ export async function listFiles(ctx: Context, next: () => Promise<any>) {
 
   const filePath = 'appFilesFromRegistry'
 
-  await ensureDir(filePath)
+  await emptyDir(filePath)
   const oldVersion = parseAppId(appID).version
   const stream = await ctx.clients.registry.unpackAppBundle(
     appName,
