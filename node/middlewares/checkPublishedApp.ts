@@ -1,5 +1,3 @@
-import { createHash } from 'crypto'
-
 import { parseAppId } from '@vtex/api'
 import { json } from 'co-body'
 
@@ -14,14 +12,8 @@ export async function checkPublishedApp(
   const { logger } = ctx.vtex
   const body = await json(ctx.req)
 
-  const appID = body.buildId
-  const { name } = parseAppId(appID)
-
   const { vbase } = ctx.clients
-  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
-  const buildHash = createHash('md5')
-    .update(buildId)
-    .digest('hex')
+  const { buildId } = body
 
   const buildStatus = await getBuildStatus(
     vbase,
@@ -29,7 +21,7 @@ export async function checkPublishedApp(
     ctx.vtex.workspace
   )
 
-  if (buildStatus.buildId !== buildHash || buildStatus.appId !== appID) {
+  if (buildStatus.buildId !== buildId) {
     await returnResponseError({
       code: 'ERROR',
       ctx,
@@ -59,10 +51,12 @@ export async function checkPublishedApp(
     return
   }
 
+  const { appId } = buildStatus
+  const { name } = parseAppId(appId)
   let installResponse: InstallResponse = { code: '' }
 
   try {
-    installResponse = await ctx.clients.billings.installApp(appID, true, false)
+    installResponse = await ctx.clients.billings.installApp(appId, true, false)
   } catch (err) {
     logger.error(`Could not install ${name} - ${err}`)
     await returnResponseError({
