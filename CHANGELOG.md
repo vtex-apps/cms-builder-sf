@@ -7,11 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.5.1] - 2020-09-24
+### Changed
 
-### Fix
-
-- Removing unused middleware
+- BuildIds for vbase are now random strings
 
 ## [1.5.0] - 2020-09-11
 

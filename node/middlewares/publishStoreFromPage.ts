@@ -1,4 +1,4 @@
-import { createHash } from 'crypto'
+import { createHash, randomBytes } from 'crypto'
 
 import { parseAppId } from '@vtex/api'
 import { json } from 'co-body'
@@ -73,7 +73,7 @@ export async function publishStoreFromPage(
   const { version } = parseAppId(newAppID)
 
   const { vbase } = ctx.clients
-  const buildId = `${ctx.vtex.account}.${ctx.vtex.workspace}`
+  const buildId = randomBytes(16).toString('hex')
   const buildHash = createHash('md5')
     .update(buildId)
     .digest('hex')
@@ -136,7 +136,7 @@ export async function publishStoreFromPage(
     `Finished building ${newAppID}. Please check to make sure the publishing was successful.`
   )
 
-  const response = jsonResponse(newAppID)
+  const response = jsonResponse(buildHash)
 
   ctx.status = 200
   ctx.body = response
