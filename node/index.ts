@@ -13,10 +13,10 @@ import { Clients } from './clients'
 import { buildStatus } from './events/buildStatus'
 import { checkPublishedApp } from './middlewares/checkPublishedApp'
 import { emptyApp } from './middlewares/emptyApp'
+import { listFiles } from './middlewares/listFiles'
 import { methodNotAllowed } from './middlewares/methodNotAllowed'
 import { publishStoreFromPage } from './middlewares/publishStoreFromPage'
 import { unpublishPage } from './middlewares/unpublishPage'
-import { listFiles } from './middlewares/listFiles'
 
 const TIMEOUT_MS = 10000
 
@@ -68,6 +68,10 @@ export default new Service<Clients, State, ParamsContext>({
       DEFAULT: methodNotAllowed,
       PUT: [checkPublishedApp],
     }),
+    listFiles: method({
+      DEFAULT: methodNotAllowed,
+      GET: [listFiles],
+    }),
     status: method({
       DEFAULT: methodNotAllowed,
       POST: [publishStoreFromPage],
@@ -75,10 +79,6 @@ export default new Service<Clients, State, ParamsContext>({
     unpublish: method({
       DEFAULT: methodNotAllowed,
       POST: [unpublishPage],
-    }),
-    listFiles: method({
-      DEFAULT: methodNotAllowed,
-      GET: [listFiles],
     }),
   },
 })
