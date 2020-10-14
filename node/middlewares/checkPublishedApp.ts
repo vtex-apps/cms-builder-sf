@@ -72,9 +72,7 @@ export async function checkPublishedApp(
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
-        message: `Simple installation error  ${JSON.stringify(
-          installResponse
-        )}`,
+        message: 'simple installation error',
         next,
       })
 
@@ -107,9 +105,7 @@ export async function checkPublishedApp(
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
-        message: `complex installation error ${JSON.stringify(
-          installResponse
-        )} ${JSON.stringify(err)}`,
+        message: 'complex installation error',
         next,
       })
 
