@@ -1,7 +1,7 @@
-import { parseAppId } from '@vtex/api'
+import { IOContext, parseAppId } from '@vtex/api'
 import { json } from 'co-body'
 
-import { InstallResponse } from '../clients/billing'
+import Billing, { InstallResponse } from '../clients/billing'
 import { returnResponseError } from '../errors/responseError'
 import { getBuildStatus } from '../util/vbase'
 
@@ -14,6 +14,11 @@ export async function checkPublishedApp(
 
   const { vbase } = ctx.clients
   const { buildId } = body
+  let { targetWorkspace } = body
+
+  if (targetWorkspace === undefined) {
+    targetWorkspace = ctx.vtex.workspace
+  }
 
   const buildStatus = await getBuildStatus(
     vbase,
@@ -55,18 +60,57 @@ export async function checkPublishedApp(
   const { name } = parseAppId(appId)
   let installResponse: InstallResponse = { code: '' }
 
-  try {
-    installResponse = await ctx.clients.billings.installApp(appId, true, false)
-  } catch (err) {
-    logger.error(`Could not install ${name} - ${err}`)
-    await returnResponseError({
-      code: 'INSTALLATION_ERROR',
-      ctx,
-      message: JSON.stringify(installResponse),
-      next,
-    })
+  if (targetWorkspace === ctx.vtex.workspace) {
+    try {
+      installResponse = await ctx.clients.billings.installApp(
+        appId,
+        true,
+        false
+      )
+    } catch (err) {
+      logger.error(`Could not install ${name} - ${err}`)
+      await returnResponseError({
+        code: 'INSTALLATION_ERROR',
+        ctx,
+        message: JSON.stringify(installResponse),
+        next,
+      })
 
-    return
+      return
+    }
+  } else {
+    try {
+      await ctx.clients.workspaces.get(ctx.vtex.account, targetWorkspace)
+    } catch (err) {
+      await ctx.clients.workspaces.create(
+        ctx.vtex.account,
+        targetWorkspace,
+        false
+      )
+    }
+
+    const newCtx = {
+      ...ctx.vtex,
+      workspace: targetWorkspace,
+    } as IOContext
+
+    const newBilling = new Billing(newCtx)
+
+    try {
+      installResponse = await newBilling.installApp(appId, true, false)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err)
+      logger.error(`Could not install ${name} - ${err}`)
+      await returnResponseError({
+        code: 'INSTALLATION_ERROR',
+        ctx,
+        message: JSON.stringify(installResponse),
+        next,
+      })
+
+      return
+    }
   }
 
   ctx.status = 200

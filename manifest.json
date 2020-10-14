@@ -46,6 +46,12 @@
     },
     {
       "name": "read-workspace-apps-assets"
+    },
+    {
+      "name": "read-write-any-workspace"
+    },
+    {
+      "name": "create-delete-workspace"
     }
   ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
