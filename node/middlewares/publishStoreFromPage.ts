@@ -48,7 +48,7 @@ export async function publishStoreFromPage(
       code: 'BUILD_FAILED',
       ctx,
       message:
-        'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title and slug',
+        'Missing a parameter for the uploadFile. It is necessary to have the blocks, page, title, slug and dependencies',
       next,
     })
   }
