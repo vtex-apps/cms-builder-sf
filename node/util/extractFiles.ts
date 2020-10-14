@@ -1,5 +1,5 @@
 import { File } from '@vtex/api/lib/clients/infra/Registry'
-import { pathExists, remove, writeJSON, emptyDir } from 'fs-extra'
+import { emptyDir, pathExists, remove, writeJSON } from 'fs-extra'
 
 export async function createBaseFolderWithStore(
   path: string,
@@ -49,8 +49,8 @@ export async function extractFiles(body: any, path: string, mainPath: string) {
       await writeJSON(filePath, body[i].content)
 
       const file: File = {
-        path: filePath.replace(`${mainPath}/`, ''),
         content: JSON.stringify(body[i].content),
+        path: filePath.replace(`${mainPath}/`, ''),
       }
 
       files.push(file)

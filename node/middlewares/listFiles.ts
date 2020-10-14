@@ -2,8 +2,8 @@ import { parseAppId } from '@vtex/api'
 import { emptyDir } from 'fs-extra'
 import streamToPromise from 'stream-to-promise'
 
-import { STORE_STATE } from '../util/constants'
 import { extractFiles } from '../util/appFiles'
+import { STORE_STATE } from '../util/constants'
 // import { getRouteJSON } from './routes'
 
 export async function listFiles(ctx: Context, next: () => Promise<any>) {
@@ -11,9 +11,9 @@ export async function listFiles(ctx: Context, next: () => Promise<any>) {
   const appName = `${ctx.vtex.account}.${STORE_STATE}`
   let appID = `${appName}@0.0.0`
   let response = {
-    routes: {},
     appFiles: {},
     manifest: {},
+    routes: {},
   }
 
   try {
@@ -52,9 +52,9 @@ export async function listFiles(ctx: Context, next: () => Promise<any>) {
   const appFiles = await extractFiles(sourceCodePath, sourceCodePath)
 
   response = {
-    routes: appFiles.routes,
     appFiles: appFiles.files,
     manifest: appFiles.manifest,
+    routes: appFiles.routes,
   }
 
   ctx.status = 200
