@@ -124,7 +124,7 @@ export async function parseRoutes(path: string) {
     }
   } catch (error) {
     console.error(error)
-    throw new InvalidRoutes("routes.json doesn't exist or is malformed.")
+    throw new InvalidRoutes('routes.json does not exist or is malformed.')
   }
 
   return routes
