@@ -109,7 +109,7 @@ export async function checkPublishedApp(
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
-        message: 'complex installation error',
+        message: err,
         next,
       })
 
