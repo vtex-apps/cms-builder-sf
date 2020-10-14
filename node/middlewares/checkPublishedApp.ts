@@ -68,7 +68,9 @@ export async function checkPublishedApp(
         false
       )
     } catch (err) {
-      logger.error(`Could not install ${name} - ${err}`)
+      logger.error(
+        `Could not install ${name} - ${err}, ${JSON.stringify(installResponse)}`
+      )
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
@@ -101,7 +103,9 @@ export async function checkPublishedApp(
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(err)
-      logger.error(`Could not install ${name} - ${err}`)
+      logger.error(
+        `Could not install ${name} - ${err}, ${JSON.stringify(installResponse)}`
+      )
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
