@@ -102,10 +102,8 @@ export async function checkPublishedApp(
       installResponse = await newBilling.installApp(appId, true, false)
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.log(err)
-      logger.error(
-        `Could not install ${name} - ${err}, ${JSON.stringify(installResponse)}`
-      )
+      console.log('error:', err)
+      logger.error(`Could not install ${name} - ${err}`)
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
