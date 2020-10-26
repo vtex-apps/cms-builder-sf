@@ -97,6 +97,7 @@ export async function checkPublishedApp(
 
     const newCtx = {
       ...ctx.vtex,
+      timeout: 10000,
       workspace: targetWorkspace,
     } as IOContext
 
