@@ -1,7 +1,7 @@
-import { IOContext, parseAppId } from '@vtex/api'
+import { AppInstallResponse, Apps, IOContext, parseAppId } from '@vtex/api'
 import { json } from 'co-body'
 
-import Billing, { InstallResponse } from '../clients/billing'
+// import Billing, { InstallResponse } from '../clients/billing'
 import { returnResponseError } from '../errors/responseError'
 import { getBuildStatus } from '../util/vbase'
 
@@ -58,15 +58,19 @@ export async function checkPublishedApp(
 
   const { appId } = buildStatus
   const { name } = parseAppId(appId)
-  let installResponse: InstallResponse = { code: '' }
+  let installResponse: AppInstallResponse = { message: '' }
 
   if (targetWorkspace === ctx.vtex.workspace) {
     try {
-      installResponse = await ctx.clients.billings.installApp(
-        appId,
-        true,
-        false
-      )
+      installResponse = (await ctx.clients.apps.installApp(
+        appId
+      )) as AppInstallResponse
+
+      //   ctx.clients.billings.installApp(
+      //   appId,
+      //   true,
+      //   false
+      // )
     } catch (err) {
       logger.error(
         `Could not install ${name} - ${err}, ${JSON.stringify(installResponse)}`
@@ -96,10 +100,10 @@ export async function checkPublishedApp(
       workspace: targetWorkspace,
     } as IOContext
 
-    const newBilling = new Billing(newCtx)
+    const newApps = new Apps(newCtx)
 
     try {
-      installResponse = await newBilling.installApp(appId, true, false)
+      installResponse = (await newApps.installApp(appId)) as AppInstallResponse
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log('error:', err)
