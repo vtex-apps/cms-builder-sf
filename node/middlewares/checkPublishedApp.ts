@@ -1,7 +1,6 @@
 import { AppInstallResponse, Apps, IOContext, parseAppId } from '@vtex/api'
 import { json } from 'co-body'
 
-// import Billing, { InstallResponse } from '../clients/billing'
 import { returnResponseError } from '../errors/responseError'
 import { getBuildStatus } from '../util/vbase'
 
@@ -65,12 +64,6 @@ export async function checkPublishedApp(
       installResponse = (await ctx.clients.apps.installApp(
         appId
       )) as AppInstallResponse
-
-      //   ctx.clients.billings.installApp(
-      //   appId,
-      //   true,
-      //   false
-      // )
     } catch (err) {
       logger.error(
         `Could not install ${name} - ${err}, ${JSON.stringify(installResponse)}`
@@ -78,13 +71,28 @@ export async function checkPublishedApp(
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
-        message: 'simple installation error',
+        message: 'Installation error',
         next,
       })
 
       return
     }
   } else {
+
+    if (ctx.vtex.workspace != "master") {
+     logger.error(
+        `Could not install ${name}}`
+      )
+      await returnResponseError({
+        code: 'INSTALLATION_ERROR',
+        ctx,
+        message: 'Cannot install in another workspace in you are not in master',
+        next,
+      })
+
+      return
+    }
+
     try {
       await ctx.clients.workspaces.get(ctx.vtex.account, targetWorkspace)
     } catch (err) {
@@ -106,8 +114,6 @@ export async function checkPublishedApp(
     try {
       installResponse = (await newApps.installApp(appId)) as AppInstallResponse
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('error:', err)
       logger.error(`Could not install ${name} - ${err}`)
       await returnResponseError({
         code: 'INSTALLATION_ERROR',

@@ -4,7 +4,6 @@ import streamToPromise from 'stream-to-promise'
 
 import { extractFiles } from '../util/appFiles'
 import { STORE_STATE } from '../util/constants'
-// import { getRouteJSON } from './routes'
 
 export async function listFiles(ctx: Context, next: () => Promise<any>) {
   const { logger } = ctx.vtex
