@@ -15,7 +15,7 @@ export async function checkPublishedApp(
   const { buildId } = body
   let { targetWorkspace } = body
 
-  if (targetWorkspace === undefined) {
+  if (!targetWorkspace) {
     targetWorkspace = ctx.vtex.workspace
   }
 
@@ -78,11 +78,8 @@ export async function checkPublishedApp(
       return
     }
   } else {
-
-    if (ctx.vtex.workspace != "master") {
-     logger.error(
-        `Could not install ${name}}`
-      )
+    if (ctx.vtex.workspace !== 'master') {
+      logger.error(`Could not install ${name}}`)
       await returnResponseError({
         code: 'INSTALLATION_ERROR',
         ctx,
@@ -105,7 +102,7 @@ export async function checkPublishedApp(
 
     const newCtx = {
       ...ctx.vtex,
-      timeout: 10000,
+      timeout: 9000,
       workspace: targetWorkspace,
     } as IOContext
 
