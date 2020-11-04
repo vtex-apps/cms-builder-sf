@@ -12,11 +12,17 @@ export async function checkPublishedApp(
   const body = await json(ctx.req)
 
   const { vbase } = ctx.clients
-  const { buildId } = body
-  let { targetWorkspace } = body
+  const { buildId, targetWorkspace } = body
 
-  if (!targetWorkspace) {
-    targetWorkspace = ctx.vtex.workspace
+  if (!targetWorkspace || !buildId) {
+    await returnResponseError({
+      code: 'INSTALLATION_ERROR',
+      ctx,
+      message: 'The fields "targetWorkspace" and "buildId" are required',
+      next,
+    })
+
+    return
   }
 
   const buildStatus = await getBuildStatus(
