@@ -1,9 +1,9 @@
 {
-  "name": "store-builder",
+  "name": "cms-builder-sf",
   "vendor": "vtex",
   "version": "1.6.0",
-  "title": "Service Example",
-  "description": "Reference app for VTEX IO Services",
+  "title": "CMS Builder SF",
+  "description": "CMS Builder for Store Framework - VTEX IO",
   "mustUpdateAt": "2018-01-04",
   "categories": [],
   "dependencies": {
