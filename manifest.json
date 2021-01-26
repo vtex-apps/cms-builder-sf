@@ -1,7 +1,7 @@
 {
   "name": "cms-builder-sf",
   "vendor": "vtex",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "title": "CMS Builder SF",
   "description": "CMS Builder for Store Framework - VTEX IO",
   "mustUpdateAt": "2018-01-04",
