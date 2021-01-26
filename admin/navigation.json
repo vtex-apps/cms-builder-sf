@@ -1,0 +1,14 @@
+[
+  {
+    "section": "storeSetup",
+    "subSection": "cmsAlpha",
+    "titleId": "admin/cms.admin.menu-section",
+    "subSectionItems": [
+      {
+        "isNew": true,
+        "labelId": "admin/cms.admin.menu-button.pages",
+        "path": "/admin/new-cms/store"
+      }
+    ]
+  }
+]
