@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Rename app to `store-builder`
+
 ## [1.7.0] - 2021-01-26
 
 ### Added
